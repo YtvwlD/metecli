@@ -21,7 +21,6 @@ def do():
     
     log.debug("Parsed args: %s", args)
     if(not hasattr(args, "func")):
-        log.warning("No topic provided.")
         print("You must provide a topic.")
         print("Please see '--help'.")
         return
