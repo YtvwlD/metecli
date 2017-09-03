@@ -4,7 +4,7 @@ from .config import Config
 
 def yn(prompt):
     while True:
-        entered = input("{} ".format(prompt))
+        entered = input("{} (y/n) ".format(prompt))
         if entered in ("yes", "y"):
             return True
         if entered in ("no", "n"):
@@ -19,7 +19,7 @@ def get_url(log=None):
             print("Unknown URL scheme '{}'. Please try again.".format(parsed.scheme))
             continue
         if parsed.scheme != "https":
-            if yn("The URL you entered doesn't use HTTPS. Do you want to try again? (y/n)"):
+            if yn("The URL you entered doesn't use HTTPS. Do you want to try again?"):
                 continue
             log.warning("Using HTTP. The connection won't be secure.")
         if not Connection(log=log, base_url=given).try_connect():
@@ -41,7 +41,7 @@ def get_uid(log=None, url=None):
                     break
             else:
                 if given in user["name"]:
-                    if yn("Is '{}' your account? (y/n)".format(user["name"])):
+                    if yn("Is '{}' your account?".format(user["name"])):
                         uid = user["id"]
                         found = True
                         break
