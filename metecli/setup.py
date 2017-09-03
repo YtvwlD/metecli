@@ -50,6 +50,10 @@ def get_uid(log=None, url=None):
         else:
             print("No matching account found. Please try again.")
 
+def setup_cmdline(global_subparsers, log=None):
+    parser = global_subparsers.add_parser("setup", help="setup the connection and select an account")
+    parser.set_defaults(func=lambda args: do(args, log=log))
+
 def do(args, log=None):
     config = Config(log=log)
     log.debug("Starting setup.")

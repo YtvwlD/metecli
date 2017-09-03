@@ -1,5 +1,5 @@
-from . import log, cmdline, setup, account
+from . import log, cmdline
 
 log.setup(log.logging.DEBUG) # TODO
 
-cmdline.do(log=log, setup_func=setup.do, account_func=account.do)
+cmdline.do(log=log)

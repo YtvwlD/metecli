@@ -1,13 +1,12 @@
+from . import setup, account
+
 import argparse
 
-def do(log=None, setup_func=None, account_func=None):
+def do(log=None):
     parser = argparse.ArgumentParser(description="A command line interface to mete.")
     subparsers = parser.add_subparsers(help="commands")
-    parser_setup = subparsers.add_parser("setup", help="setup the connection and select an account")
-    parser_setup.set_defaults(func=setup_func)
-    parser_account = subparsers.add_parser("account", help="show or modify an account")
-    # TODO parameters
-    parser_account.set_defaults(func=account_func)
+    setup.setup_cmdline(subparsers, log=log)
+    account.setup_cmdline(subparsers, log=log)
 
     args = parser.parse_args()
     log.debug("commandline: Parsed args: {}".format(args))
@@ -16,4 +15,4 @@ def do(log=None, setup_func=None, account_func=None):
         print("You must provide a topic.")
         print("Please see '--help'.")
         return
-    args.func(args, log=log)
+    args.func(args)
