@@ -46,14 +46,14 @@ class Account():
             elif args.drink in drink["name"]:
                 possible_drinks.append(drink)
         if not drink_to_buy and len(possible_drinks) == 1:
-            log.info("No exact match, but {} is the only possibility.".format(possible_drinks[0]["name"]))
+            log.info("No exact match, but %s is the only possibility.", possible_drinks[0]["name"])
             drink_to_buy = possible_drinks[0]
         if drink_to_buy:
-            log.info("Buying drink {}...".format(drink_to_buy["name"]))
+            log.info("Buying drink %s...", drink_to_buy["name"])
             self._conn.buy(self._uid, drink_to_buy["id"])
         elif possible_drinks:
             print("No exactly matching drink was found.")
-            print("Possible drinks: {}".format(possible_drinks))
+            print("Possible drinks: %s", possible_drinks)
         else:
             print("No matching drinks were found.")
     
@@ -61,9 +61,9 @@ class Account():
         pass
     
     def pay(self, args):
-        log.info("Paying {}...".format(args.amount))
+        log.info("Paying %f...", args.amount)
         self._conn.pay(self._uid, args.amount)
     
     def deposit(self, args):
-        log.info("Depositing {}...".format(args.amount))
+        log.info("Depositing %f...", args.amount)
         self._conn.deposit(self._uid, args.amount)

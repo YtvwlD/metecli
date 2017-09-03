@@ -63,8 +63,8 @@ def do(args):
     url = get_url()
     config.settings["connection"]["base_url"] = url
     config.save()
-    log.debug("URL '{}' configured.".format(url))
+    log.debug("URL '%s' configured.", url)
     uid = get_uid(url=url)
     config.settings["connection"]["uid"] = uid
     config.save()
-    log.debug("UID {} configured.".format(uid))
+    log.debug("UID %i configured.", uid)

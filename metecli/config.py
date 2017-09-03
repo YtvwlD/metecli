@@ -28,11 +28,11 @@ class Config():
                 if sys.platform == "linux":
                     config_base_path = os.path.join(os.environ["HOME"], ".config")
                 else:
-                    log.error("Unknown platform {}. Don't know where to store config.".format(sys.platform))
+                    log.error("Unknown platform '%s'. Don't know where to store config.", sys.platform)
                     sys.exit(-1)
-        log.debug("Found config base path: {}".format(config_base_path))
+        log.debug("Found config base path: %s", config_base_path)
         config_file_path = os.path.join(config_base_path, "metecli.yaml")
-        log.debug("Using config file at: {}".format(config_file_path))
+        log.debug("Using config file at: %s", config_file_path)
         self.config_file_path = config_file_path
     
     def _open_or_create(self):
