@@ -31,9 +31,6 @@ class Account():
         self._conn = Connection(base_url=config.settings["connection"]["base_url"])
         self._uid = config.settings["connection"]["uid"]
 
-    def do(self, args):
-        log.info("TODO: account")
-    
     def buy(self, args):
         drinks = self._conn.drinks()
         possible_drinks = list()
