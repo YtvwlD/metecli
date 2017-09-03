@@ -27,6 +27,29 @@ def get_url(log=None):
             continue
         return given
 
+def get_uid(log=None, url=None):
+    conn = Connection(log=log, base_url=url)
+    users = conn.users()
+    while True:
+        found = False
+        given = input("Please enter your username (or a part of it) or your uid: ")
+        for user in users:
+            if given.isdecimal():
+                uid = int(given)
+                if user["id"] == uid:
+                    found = True
+                    break
+            else:
+                if given in user["name"]:
+                    if yn("Is '{}' your account? (y/n)".format(user["name"])):
+                        uid = user["id"]
+                        found = True
+                        break
+        if found:
+            return uid
+        else:
+            print("No matching account found. Please try again.")
+
 def do(args, log=None):
     config = Config(log=log)
     log.debug("Starting setup.")
@@ -34,3 +57,7 @@ def do(args, log=None):
     config.settings["connection"]["base_url"] = url
     config.save()
     log.debug("Setup: URL '{}' configured.".format(url))
+    uid = get_uid(log=log, url=url)
+    config.settings["connection"]["uid"] = uid
+    config.save()
+    log.debug("Setup: UID {} configured.".format(uid))

@@ -12,6 +12,11 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/users.json"))
         return r.json()
     
+    def get_user(self, uid):
+        """Get information about a user."""
+        r = requests.get(urljoin(self._base_url, "/users/{}.json".format(uid)))
+        return r.json()
+    
     def try_connect(self):
         """Tries to connect to the server."""
         try:
