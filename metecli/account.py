@@ -33,7 +33,30 @@ class Account():
         log.info("TODO: account")
     
     def buy(self, args):
-        pass
+        drinks = self._conn.drinks()
+        possible_drinks = list()
+        drink_to_buy = None
+        for drink in drinks:
+            if args.drink.isdecimal():
+                if int(args.drink) == drink["id"]:
+                    drink_to_buy = drink
+                    break
+            if args.drink == drink["name"]:
+                drink_to_buy = drink
+                break
+            elif args.drink in drink["name"]:
+                possible_drinks.append(drink)
+        if not drink_to_buy and len(possible_drinks) == 1:
+            self._log.info("No exact match, but {} is the only possibility.".format(possible_drinks[0]["name"]))
+            drink_to_buy = possible_drinks[0]
+        if drink_to_buy:
+            self._log.info("Buying drink {}...".format(drink_to_buy["name"]))
+            self._conn.buy(self._uid, drink_to_buy["id"])
+        elif possible_drinks:
+            print("No exactly matching drink was found.")
+            print("Possible drinks: {}".format(possible_drinks))
+        else:
+            print("No matching drinks were found.")
     
     def buy_barcode(self, args):
         pass

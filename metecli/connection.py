@@ -17,6 +17,16 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/users/{}.json".format(uid)))
         return r.json()
     
+    def buy(self, uid, did):
+        """Buy a drink."""
+        r = requests.get(urljoin(self._base_url, "/users/{}/buy.json?drink={}".format(uid, did)))
+        assert r.ok
+    
+    def drinks(self):
+        """Lists all drinks."""
+        r = requests.get(urljoin(self._base_url, "/drinks.json"))
+        return r.json()
+    
     def try_connect(self):
         """Tries to connect to the server."""
         try:
