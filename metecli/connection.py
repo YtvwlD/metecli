@@ -46,6 +46,7 @@ class Connection():
         try:
             self.users()
             return True
-        except ConnectionError:
+        except Exception as exc:
+            log.error("%s: %s", type(exc), exc)
             return False
         
