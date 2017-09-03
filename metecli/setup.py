@@ -44,7 +44,7 @@ def get_uid(url=None):
                     break
             else:
                 if given in user["name"]:
-                    if yn("Is '{}' your account?".format(user["name"])):
+                    if yn("Is '{}' ({}) your account?".format(user["name"], user["email"])):
                         uid = user["id"]
                         found = True
                         break
