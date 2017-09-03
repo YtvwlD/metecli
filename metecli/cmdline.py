@@ -12,9 +12,9 @@ def do():
     account.setup_cmdline(subparsers)
 
     args = parser.parse_args()
-    log.debug("commandline: Parsed args: {}".format(args))
+    log.debug("Parsed args: {}".format(args))
     if(not hasattr(args, "func")):
-        log.warning("commandline: No topic provided.")
+        log.warning("No topic provided.")
         print("You must provide a topic.")
         print("Please see '--help'.")
         return
