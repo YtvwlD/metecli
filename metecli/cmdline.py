@@ -10,8 +10,15 @@ def do():
     subparsers = parser.add_subparsers(help="commands")
     setup.setup_cmdline(subparsers)
     account.setup_cmdline(subparsers)
+    parser.add_argument("--loglevel", type=str, help="{debug, info, *warning*, error, critical}", default="warning")
 
     args = parser.parse_args()
+    numeric_log_level = getattr(logging, args.loglevel.upper(), None)
+    if not numeric_log_level:
+        print("Invalid log level.")
+        return
+    logging.basicConfig(level=numeric_log_level)
+    
     log.debug("Parsed args: %s", args)
     if(not hasattr(args, "func")):
         log.warning("No topic provided.")
