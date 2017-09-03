@@ -3,7 +3,7 @@ import os
 import sys
 
 DEFAULT_SETTINGS = {
-
+    "connection": {},
 }
 
 class Config():
