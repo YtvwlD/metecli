@@ -62,7 +62,9 @@ class Account():
         pass
     
     def pay(self, args):
-        pass
+        self._log.info("Paying {}...".format(args.amount))
+        self._conn.pay(self._uid, args.amount)
     
     def deposit(self, args):
-        pass
+        self._log.info("Depositing {}...".format(args.amount))
+        self._conn.deposit(self._uid, args.amount)

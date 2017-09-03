@@ -22,6 +22,18 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/users/{}/buy.json?drink={}".format(uid, did)))
         assert r.ok
     
+    def pay(self, uid, amount):
+        """Pay an amount."""
+        r = requests.get(urljoin(self._base_url, "/users/{}/payment.json?amount={}".format(uid, amount))) # TODO: pay.json
+        print(r.text)
+        assert r.ok
+    
+    def deposit(self, uid, amount):
+        """Deposit money."""
+        r = requests.get(urljoin(self._base_url, "/users/{}/deposit.json?amount={}".format(uid, amount)))
+        print(r.text)
+        assert r.ok
+    
     def drinks(self):
         """Lists all drinks."""
         r = requests.get(urljoin(self._base_url, "/drinks.json"))
