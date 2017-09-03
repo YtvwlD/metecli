@@ -2,11 +2,14 @@ from . import setup, account
 
 import argparse
 
-def do(log=None):
+import logging
+log = logging.getLogger(__name__)
+
+def do():
     parser = argparse.ArgumentParser(description="A command line interface to mete.")
     subparsers = parser.add_subparsers(help="commands")
-    setup.setup_cmdline(subparsers, log=log)
-    account.setup_cmdline(subparsers, log=log)
+    setup.setup_cmdline(subparsers)
+    account.setup_cmdline(subparsers)
 
     args = parser.parse_args()
     log.debug("commandline: Parsed args: {}".format(args))

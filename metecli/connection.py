@@ -2,9 +2,11 @@ import requests
 from requests.exceptions import ConnectionError
 from urllib.parse import urljoin
 
+import logging
+log = logging.getLogger(__name__)
+
 class Connection():
-    def __init__(self, log=None, base_url=None):
-        self._log = log
+    def __init__(self, base_url=None):
         self._base_url = base_url
     
     def users(self):

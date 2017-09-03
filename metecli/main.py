@@ -1,8 +1,10 @@
-from . import log, cmdline
+from . import cmdline
+
+import logging
 
 def run():
-    log.setup(log.logging.DEBUG) # TODO
-    cmdline.do(log=log)
+    logging.basicConfig(level=logging.DEBUG) # TODO
+    cmdline.do()
 
 if __name__ == '__main__':
     run()

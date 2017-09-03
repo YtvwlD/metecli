@@ -2,6 +2,9 @@ from urllib.parse import urlparse
 from .connection import Connection
 from .config import Config
 
+import logging
+log = logging.getLogger(__name__)
+
 def yn(prompt):
     while True:
         entered = input("{} (y/n) ".format(prompt))
@@ -11,7 +14,7 @@ def yn(prompt):
             return False
         print("Please enter 'yes' or 'no'.")
 
-def get_url(log=None):
+def get_url():
     while True:
         given = input("Please enter the url for mete: ")
         parsed = urlparse(given)
@@ -22,13 +25,13 @@ def get_url(log=None):
             if yn("The URL you entered doesn't use HTTPS. Do you want to try again?"):
                 continue
             log.warning("Using HTTP. The connection won't be secure.")
-        if not Connection(log=log, base_url=given).try_connect():
+        if not Connection(base_url=given).try_connect():
             print("Couln't connect to the server. Please try again.")
             continue
         return given
 
-def get_uid(log=None, url=None):
-    conn = Connection(log=log, base_url=url)
+def get_uid(url=None):
+    conn = Connection(base_url=url)
     users = conn.users()
     while True:
         found = False
@@ -50,18 +53,18 @@ def get_uid(log=None, url=None):
         else:
             print("No matching account found. Please try again.")
 
-def setup_cmdline(global_subparsers, log=None):
+def setup_cmdline(global_subparsers):
     parser = global_subparsers.add_parser("setup", help="setup the connection and select an account")
-    parser.set_defaults(func=lambda args: do(args, log=log))
+    parser.set_defaults(func=do)
 
-def do(args, log=None):
-    config = Config(log=log)
+def do(args):
+    config = Config()
     log.debug("Starting setup.")
-    url = get_url(log=log)
+    url = get_url()
     config.settings["connection"]["base_url"] = url
     config.save()
     log.debug("Setup: URL '{}' configured.".format(url))
-    uid = get_uid(log=log, url=url)
+    uid = get_uid(url=url)
     config.settings["connection"]["uid"] = uid
     config.save()
     log.debug("Setup: UID {} configured.".format(uid))
