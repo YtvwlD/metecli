@@ -1,5 +1,8 @@
 from . import log, cmdline
 
-log.setup(log.logging.DEBUG) # TODO
+def run():
+    log.setup(log.logging.DEBUG) # TODO
+    cmdline.do(log=log)
 
-cmdline.do(log=log)
+if __name__ == '__main__':
+    run()
