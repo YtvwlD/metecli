@@ -66,7 +66,7 @@ class Account():
             self._conn.buy(self._uid, drink_to_buy["id"])
         elif possible_drinks:
             print("No exactly matching drink was found.")
-            print("Possible drinks: %s", possible_drinks)
+            print("Possible drinks:", list(map(lambda drink: "{} ({})".format(drink["name"], drink["id"]), possible_drinks)))
         else:
             print("No matching drinks were found.")
     
