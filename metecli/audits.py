@@ -24,4 +24,4 @@ def show(user=None):
     if user:
         print(" for user {}".format(user), end="")
     print(":")
-    print(tabulate(_create_table(audits, drinks), headers=["time", "drink", "difference"]))
+    print(tabulate(_create_table(audits, drinks), headers=["time", "drink", "difference"], tablefmt=config.settings["display"]["table_format"]))

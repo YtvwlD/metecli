@@ -7,6 +7,9 @@ log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
     "connection": {},
+    "display": {
+        "table_format": "grid",
+    }
 }
 
 class Config():
