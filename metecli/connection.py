@@ -14,6 +14,15 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/users.json"))
         return r.json()
     
+    def audits(self, user=None): # TODO: more params
+        """Get audits."""
+        params = dict()
+        if user:
+            assert isinstance(user, int)
+            params["user"] = user
+        r = requests.get(urljoin(self._base_url, "/audits.json"), params=params)
+        return r.json()
+    
     def get_user(self, uid):
         """Get information about a user."""
         r = requests.get(urljoin(self._base_url, "/users/{}.json".format(uid)))

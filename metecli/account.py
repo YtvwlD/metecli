@@ -1,5 +1,6 @@
 from .config import Config
 from .connection import Connection
+from . import audits
 
 import logging
 log = logging.getLogger(__name__)
@@ -23,6 +24,8 @@ def setup_cmdline(global_subparsers):
     parser_deposit = subparsers.add_parser("deposit", help="add an amount to your balance")
     parser_deposit.add_argument("amount", type=float, help="the amount to add")
     parser_deposit.set_defaults(func=acc.deposit)
+    parser_logs = subparsers.add_parser("logs", help="display the logs")
+    parser_logs.set_defaults(func=acc.logs)
     parser.set_defaults(func=do)
 
 class Account():
@@ -36,7 +39,11 @@ class Account():
             log.warn("User account is not configured yet. Account management won't be possible.")
         else:
             self._uid = config.settings["connection"]["uid"]
-
+    
+    def logs(self, args):
+        """The same as `audits --user <this user>`."""
+        audits.show(user=str(self._uid))
+    
     def buy(self, args):
         drinks = self._conn.drinks()
         possible_drinks = list()
