@@ -28,8 +28,14 @@ def setup_cmdline(global_subparsers):
 class Account():
     def __init__(self):
         config = Config()
-        self._conn = Connection(base_url=config.settings["connection"]["base_url"])
-        self._uid = config.settings["connection"]["uid"]
+        if not "base_url" in config.settings["connection"]:
+            log.warn("Connection is not configured yet. Account management won't be possible.")
+        else:
+            self._conn = Connection(base_url=config.settings["connection"]["base_url"])
+        if not "uid" in config.settings["connection"]:
+            log.warn("User account is not configured yet. Account management won't be possible.")
+        else:
+            self._uid = config.settings["connection"]["uid"]
 
     def buy(self, args):
         drinks = self._conn.drinks()
