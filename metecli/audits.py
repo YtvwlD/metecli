@@ -1,8 +1,17 @@
 from .config import Config
 from .connection import Connection
+from .utils import fuzzy_search
 
 from contextlib import suppress
 from tabulate import tabulate
+
+def setup_cmdline(global_subparsers):
+    parser = global_subparsers.add_parser("audits", help="show audits")
+    parser.add_argument("--user", type=str, help="show only audits for the user USER")
+    parser.set_defaults(func=do)
+
+def do(args):
+    show(args.user)
 
 def _create_table(audits, drinks):
     for audit in audits["audits"]:
@@ -17,8 +26,14 @@ def _create_table(audits, drinks):
 def show(user=None):
     config = Config()
     conn = Connection(base_url=config.settings["connection"]["base_url"])
-    assert user.isdecimal() # TODO: Support searching for user names.
-    audits = conn.audits(user=int(user))
+    if user:
+        user_found = fuzzy_search(conn, "user", user)
+        if user_found:
+            audits = conn.audits(user=user_found["id"])
+        else:
+            return
+    else:
+        audits = conn.audits()
     drinks = conn.drinks()
     print("Audits", end="")
     if user:

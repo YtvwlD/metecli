@@ -1,6 +1,7 @@
 from .config import Config
 from .connection import Connection
 from . import audits
+from .utils import fuzzy_search
 
 import logging
 log = logging.getLogger(__name__)
@@ -45,30 +46,9 @@ class Account():
         audits.show(user=str(self._uid))
     
     def buy(self, args):
-        drinks = self._conn.drinks()
-        possible_drinks = list()
-        drink_to_buy = None
-        for drink in drinks:
-            if args.drink.isdecimal():
-                if int(args.drink) == drink["id"]:
-                    drink_to_buy = drink
-                    break
-            if args.drink == drink["name"]:
-                drink_to_buy = drink
-                break
-            elif args.drink in drink["name"]:
-                possible_drinks.append(drink)
-        if not drink_to_buy and len(possible_drinks) == 1:
-            log.info("No exact match, but %s is the only possibility.", possible_drinks[0]["name"])
-            drink_to_buy = possible_drinks[0]
-        if drink_to_buy:
-            log.info("Buying drink %s...", drink_to_buy["name"])
-            self._conn.buy(self._uid, drink_to_buy["id"])
-        elif possible_drinks:
-            print("No exactly matching drink was found.")
-            print("Possible drinks:", ["{} ({})".format(drink["name"], drink["id"]) for drink in possible_drinks])
-        else:
-            print("No matching drinks were found.")
+        drink_found = fuzzy_search(self._conn, "drink", args.drink)
+        if drink_found:
+            self._conn.buy(self._uid, drink_found["id"])
     
     def buy_barcode(self, args):
         pass

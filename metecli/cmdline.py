@@ -1,4 +1,4 @@
-from . import setup, account
+from . import setup, account, audits
 
 import argparse
 
@@ -10,6 +10,7 @@ def do():
     subparsers = parser.add_subparsers(help="commands")
     setup.setup_cmdline(subparsers)
     account.setup_cmdline(subparsers)
+    audits.setup_cmdline(subparsers)
     parser.add_argument("--loglevel", type=str, help="{debug, info, *warning*, error, critical}", default="warning")
 
     args = parser.parse_args()
