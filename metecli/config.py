@@ -57,6 +57,7 @@ class Config():
             with open(self.config_file_path, "wt") as config_file:
                 pass
             self.settings = dict(DEFAULT_SETTINGS)
+            self.save()
     
     def save(self):
         log.debug("Saving config....")
