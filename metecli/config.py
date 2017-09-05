@@ -27,11 +27,23 @@ class Config():
                 log.info("Couldn't find XDG_CONFIG_HOME in enviroment. Falling back to platform-specific defaults.")
                 if sys.platform == "linux":
                     config_base_path = os.path.join(os.environ["HOME"], ".config")
+                elif sys.platform == "darwin":
+                    config_base_path = os.path.join(os.environ["HOME"], "Library/Application Support")
+                elif sys.platform == "windows":
+                    assert os.environ.get("APPDATA")
+                    config_base_path = os.environ["APPDATA"]
                 else:
                     log.error("Unknown platform '%s'. Don't know where to store config.", sys.platform)
                     sys.exit(-1)
         log.debug("Found config base path: %s", config_base_path)
-        config_file_path = os.path.join(config_base_path, "metecli.yaml")
+        config_path = os.path.join(config_base_path, "metecli")
+        if not os.path.exists(config_path):
+            log.info("Configuration path '%s' doesn't exist. Creating.", config_path)
+            os.mkdir(config_path)
+        if not os.path.isdir(config_path):
+            log.error("Configuration path '%s' exists, but is not a directory.")
+            sys.exit(-1)
+        config_file_path = os.path.join(config_path, "config.yaml")
         log.debug("Using config file at: %s", config_file_path)
         self.config_file_path = config_file_path
     
