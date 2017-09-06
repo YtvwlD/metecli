@@ -1,4 +1,5 @@
 from . import setup, account, audits
+from .config import Config
 
 import argparse
 
@@ -24,4 +25,6 @@ def do():
     if(not hasattr(args, "func")):
         print("You must provide a topic. Please see --help.")
         return
-    args.func(args)
+    
+    config = Config()
+    args.func(args, config)

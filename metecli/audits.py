@@ -1,4 +1,3 @@
-from .config import Config
 from .connection import Connection
 from .utils import fuzzy_search
 
@@ -10,8 +9,8 @@ def setup_cmdline(global_subparsers):
     parser.add_argument("--user", type=str, help="show only audits for the user USER")
     parser.set_defaults(func=do)
 
-def do(args):
-    show(args.user)
+def do(args, config):
+    show(config, args.user)
 
 def _create_table(audits, drinks):
     for audit in audits["audits"]:
@@ -23,8 +22,7 @@ def _create_table(audits, drinks):
             drink = {"name": "n/a"}
         yield [audit["created_at"], drink["name"], audit["difference"]]
 
-def show(user=None):
-    config = Config()
+def show(config, user=None):
     conn = Connection(base_url=config.settings["connection"]["base_url"])
     if user:
         user_found = fuzzy_search(conn, "user", user)

@@ -1,6 +1,5 @@
 from urllib.parse import urlparse
 from .connection import Connection
-from .config import Config
 
 import logging
 log = logging.getLogger(__name__)
@@ -57,8 +56,7 @@ def setup_cmdline(global_subparsers):
     parser = global_subparsers.add_parser("setup", help="setup the connection and select an account")
     parser.set_defaults(func=do)
 
-def do(args):
-    config = Config()
+def do(args, config):
     log.debug("Starting setup.")
     url = get_url()
     config.settings["connection"]["base_url"] = url
