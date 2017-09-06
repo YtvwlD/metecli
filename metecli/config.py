@@ -6,6 +6,7 @@ import logging
 log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
+    "version": 1,
     "connection": {},
     "display": {
         "table_format": "grid",
@@ -16,6 +17,7 @@ class Config():
     def __init__(self):
         self._search_config_file_path()
         self._open_or_create()
+        self._migrate()
     
     def _search_config_file_path(self):
         config_base_path = None
@@ -60,6 +62,12 @@ class Config():
             with open(self.config_file_path, "wt") as config_file:
                 pass
             self.settings = dict(DEFAULT_SETTINGS)
+            self.save()
+    
+    def _migrate(self):
+        if "version" not in self.settings: # v0 -> v1
+            log.info("Configuration doesn't have a version. Asssuming v1.")
+            self.settings["version"] = 1
             self.save()
     
     def save(self):
