@@ -42,7 +42,7 @@ setup(
         
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Intended Audience :: End Users / Desktop',
+        'Intended Audience :: End Users/Desktop',
         
         # Language
         'Natural Language :: English',
