@@ -1,16 +1,17 @@
 from .connection import Connection
 from . import audits
-from .utils import fuzzy_search
+from .utils import fuzzy_search, true_false_to_yes_no
 
 import logging
 log = logging.getLogger(__name__)
 
-def do(args, config):
-    print("Please select an action (see '--help').")
+from tabulate import tabulate
 
 def setup_cmdline(global_subparsers):
     parser = global_subparsers.add_parser("account", help="show or modify an account")
     subparsers = parser.add_subparsers(help="action")
+    parser_show = subparsers.add_parser("show", help="display some information")
+    parser_show.set_defaults(func=lambda args, config: Account(config).show(args))
     parser_buy = subparsers.add_parser("buy", help="buys a drink")
     parser_buy.add_argument("drink", type=str, help="the drink to buy")
     parser_buy.set_defaults(func=lambda args, config: Account(config).buy(args))
@@ -25,7 +26,7 @@ def setup_cmdline(global_subparsers):
     parser_deposit.set_defaults(func=lambda args, config: Account(config).deposit(args))
     parser_logs = subparsers.add_parser("logs", help="display the logs")
     parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
-    parser.set_defaults(func=do)
+    parser.set_defaults(func=lambda args, config: Account(config).show(args))
 
 class Account():
     def __init__(self, config):
@@ -38,6 +39,23 @@ class Account():
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
             self._uid = self._conf.settings["connection"]["uid"]
+    
+    def show(self, args):
+        """Displays information about this user."""
+        data = self._conn.get_user(self._uid)
+        table_data = [
+            ["ID", data["id"]],
+            ["name", data["name"]],
+            ["email", data["email"]],
+            ["account balance", "{:.2f} €".format(float(data["balance"]))],
+            ["active?", true_false_to_yes_no(data["active"])],
+            ["log transactions?", true_false_to_yes_no(data["audit"])],
+            ["redirect after buying something?", true_false_to_yes_no(data["redirect"])]
+        ]
+        print(tabulate(
+            table_data,
+            tablefmt=self._conf.settings["display"]["table_format"]
+        ))
     
     def logs(self, args):
         """The same as `audits --user <this user>`."""

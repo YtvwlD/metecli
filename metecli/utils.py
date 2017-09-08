@@ -38,3 +38,6 @@ def test_terminal_utf8():
     from sys import stdout
     if stdout.encoding != "UTF-8":
         log.warning("Your system doesn't seem support UTF-8. Please consider fixing this.")
+
+def true_false_to_yes_no(value):
+    return "yes" if value else "no"
