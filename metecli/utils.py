@@ -32,3 +32,9 @@ def fuzzy_search(conn, what, search_for):
     else:
         print("No match was found.")
         return None
+
+def test_terminal_utf8():
+    """Produces a warning if the system isn't correctly configured to output UTF-8."""
+    from sys import stdout
+    if stdout.encoding != "UTF-8":
+        log.warning("Your system doesn't seem support UTF-8. Please consider fixing this.")

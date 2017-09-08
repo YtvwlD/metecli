@@ -1,5 +1,6 @@
 from . import setup, account, audits
 from .config import Config
+from .utils import test_terminal_utf8
 
 import argparse
 
@@ -27,4 +28,5 @@ def do():
         return
     
     config = Config()
+    test_terminal_utf8()
     args.func(args, config)
