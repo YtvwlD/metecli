@@ -28,6 +28,11 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/users/{}.json".format(uid)))
         return r.json()
     
+    def modify_user(self, user):
+        """Modifys an existing user."""
+        r = requests.patch(urljoin(self._base_url, "/users/{}.json").format(user["id"]), json={"user": user})
+        assert r.ok
+    
     def buy(self, uid, did):
         """Buy a drink."""
         r = requests.get(urljoin(self._base_url, "/users/{}/buy.json?drink={}".format(uid, did)))

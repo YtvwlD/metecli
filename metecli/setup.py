@@ -1,17 +1,9 @@
 from urllib.parse import urlparse
 from .connection import Connection
+from .utils import yn
 
 import logging
 log = logging.getLogger(__name__)
-
-def yn(prompt):
-    while True:
-        entered = input("{} (y/n) ".format(prompt))
-        if entered in ("yes", "y"):
-            return True
-        if entered in ("no", "n"):
-            return False
-        print("Please enter 'yes' or 'no'.")
 
 def get_url():
     while True:

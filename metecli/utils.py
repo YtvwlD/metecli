@@ -41,3 +41,57 @@ def test_terminal_utf8():
 
 def true_false_to_yes_no(value):
     return "yes" if value else "no"
+
+def yn(prompt):
+    while True:
+        entered = input("{} (y/n) ".format(prompt))
+        if entered in ("yes", "y"):
+            return True
+        if entered in ("no", "n"):
+            return False
+        print("Please enter 'yes' or 'no'.")
+
+def show_edit(dict, key, prompt, type):
+    old_value = dict[key]
+    if type == bool:
+        old_value = true_false_to_yes_no(old_value)
+    final_prompt = "{} [{}]: ".format(prompt, old_value)
+    if type == bool:
+        given = yn(final_prompt)
+        dict[key] = given
+        return
+    else:
+        given = input(final_prompt)
+    if not given:
+        given = old_value
+    while True:
+        if type == str:
+            if given.strip():
+                new_value = given
+                break
+            else:
+                print("Please type something.")
+                continue
+        elif type == int:
+            try:
+                new_value = int(given)
+                break
+            except ValueError:
+                print("Please enter a number.")
+                continue
+        elif type == float:
+            try:
+                new_value = float(given)
+                break
+            except ValueError:
+                print("Please enter a number.")
+        elif type == "email":
+            if "@" in given:
+                new_value = given
+                break
+            else:
+                print("This is not a valid email adress.")
+                continue
+        else:
+            raise Exception("Unknown type. (Please report this isssue!)")
+    dict[key] = new_value

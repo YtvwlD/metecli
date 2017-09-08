@@ -1,6 +1,6 @@
 from .connection import Connection
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit
 
 import logging
 log = logging.getLogger(__name__)
@@ -12,6 +12,8 @@ def setup_cmdline(global_subparsers):
     subparsers = parser.add_subparsers(help="action")
     parser_show = subparsers.add_parser("show", help="display some information")
     parser_show.set_defaults(func=lambda args, config: Account(config).show(args))
+    parser_modify = subparsers.add_parser("modify", help="modify your settings")
+    parser_modify.set_defaults(func=lambda args, config: Account(config).modify(args))
     parser_buy = subparsers.add_parser("buy", help="buys a drink")
     parser_buy.add_argument("drink", type=str, help="the drink to buy")
     parser_buy.set_defaults(func=lambda args, config: Account(config).buy(args))
@@ -56,6 +58,20 @@ class Account():
             table_data,
             tablefmt=self._conf.settings["display"]["table_format"]
         ))
+        
+    def modify(self, args):
+        """Modify settings."""
+        data = self._conn.get_user(self._uid)
+        log.debug("Editing account. Old data: %s", data)
+        show_edit(data, "name", "name", str)
+        show_edit(data, "email", "email", "email")
+        show_edit(data, "balance", "account balance", float)
+        data["balance"] = str(data["balance"])
+        show_edit(data, "active", "active?", bool)
+        show_edit(data, "audit", "log transactions?", bool)
+        show_edit(data, "redirect", "redirect after buying something?", bool)
+        log.debug("Editing account. New data: %s", data)
+        self._conn.modify_user(data)
     
     def logs(self, args):
         """The same as `audits --user <this user>`."""
