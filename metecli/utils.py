@@ -42,13 +42,18 @@ def test_terminal_utf8():
 def true_false_to_yes_no(value):
     return "yes" if value else "no"
 
+def yes_no_to_true_false(value):
+    if value in ("yes", "y"):
+        return True
+    if value in ("no", "n"):
+        return False
+    return None
+
 def yn(prompt):
     while True:
-        entered = input("{} (y/n) ".format(prompt))
-        if entered in ("yes", "y"):
-            return True
-        if entered in ("no", "n"):
-            return False
+        entered = yes_no_to_true_false(input("{} (y/n) ".format(prompt)))
+        if entered is not None:
+            return entered
         print("Please enter 'yes' or 'no'.")
 
 def show_edit(dict, key, prompt, type):
@@ -56,15 +61,10 @@ def show_edit(dict, key, prompt, type):
     if type == bool:
         old_value = true_false_to_yes_no(old_value)
     final_prompt = "{} [{}]: ".format(prompt, old_value)
-    if type == bool:
-        given = yn(final_prompt)
-        dict[key] = given
-        return
-    else:
-        given = input(final_prompt)
-    if not given:
-        given = old_value
     while True:
+        given = input(final_prompt)
+        if not given:
+            given = old_value
         if type == str:
             if given.strip():
                 new_value = given
@@ -85,6 +85,12 @@ def show_edit(dict, key, prompt, type):
                 break
             except ValueError:
                 print("Please enter a number.")
+        elif type == bool:
+            new_value = yes_no_to_true_false(given)
+            if new_value is not None:
+                break
+            else:
+                print("Please enter yes or no.")
         elif type == "email":
             if "@" in given:
                 new_value = given
