@@ -1,5 +1,4 @@
 import requests
-from requests.exceptions import ConnectionError
 from urllib.parse import urljoin
 
 import logging
