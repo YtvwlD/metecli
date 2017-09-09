@@ -13,12 +13,20 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/users.json"))
         return r.json()
     
-    def audits(self, user=None): # TODO: more params
+    def audits(self, user=None, from_date=None, to_date=None):
         """Get audits."""
         params = dict()
         if user:
             assert isinstance(user, int)
             params["user"] = user
+        if from_date:
+            params["start_date[year]"] = from_date.year
+            params["start_date[month]"] = from_date.month
+            params["start_date[day]"] = from_date.day
+        if to_date:
+            params["end_date[year]"] = to_date.year
+            params["end_date[month]"] = to_date.month
+            params["end_date[day]"] = to_date.day
         r = requests.get(urljoin(self._base_url, "/audits.json"), params=params)
         return r.json()
     
