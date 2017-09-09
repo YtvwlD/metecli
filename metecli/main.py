@@ -1,7 +1,5 @@
 from . import cmdline
 
-import logging
-
 def run():
     cmdline.do()
 
