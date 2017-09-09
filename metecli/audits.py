@@ -1,7 +1,6 @@
 from .connection import Connection
 from .utils import fuzzy_search
 
-from contextlib import suppress
 from tabulate import tabulate
 
 def setup_cmdline(global_subparsers):
