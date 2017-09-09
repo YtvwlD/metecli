@@ -33,11 +33,11 @@ def setup_cmdline(global_subparsers):
 class Account():
     def __init__(self, config):
         self._conf = config
-        if not "base_url" in self._conf.settings["connection"]:
+        if "base_url" not in self._conf.settings["connection"]:
             raise Exception("Connection is not configured yet. Account management isn't possible.")
         else:
             self._conn = Connection(base_url=config.settings["connection"]["base_url"])
-        if not "uid" in self._conf.settings["connection"]:
+        if "uid" not in self._conf.settings["connection"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
             self._uid = self._conf.settings["connection"]["uid"]
