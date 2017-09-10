@@ -56,6 +56,9 @@ setup(
 
         # Specify the Python versions you support here.
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
 
@@ -78,4 +81,7 @@ setup(
             'metecli=metecli.main:run',
         ],
     },
+    
+    # require (at least) Python 3.3
+    python_requires="~=3.3",
 )
