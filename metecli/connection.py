@@ -62,6 +62,11 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/drinks.json"))
         return r.json()
     
+    def barcodes(self):
+        """Lists all barcodes."""
+        r = requests.get(urljoin(self._base_url, "/barcodes.json"))
+        return r.json()
+    
     def try_connect(self):
         """Tries to connect to the server."""
         try:

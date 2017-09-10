@@ -1,6 +1,6 @@
 from .connection import Connection
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id
 
 import logging
 log = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ def setup_cmdline(global_subparsers):
     parser_buy.add_argument("drink", type=str, help="the drink to buy")
     parser_buy.set_defaults(func=lambda args, config: Account(config).buy(args))
     parser_buy_barcode = subparsers.add_parser("buy_barcode", help="buys a drink by barcode")
-    parser_buy_barcode.add_argument("barcode", type=int, help="the barcode")
+    parser_buy_barcode.add_argument("barcode", type=str, help="the barcode")
     parser_buy_barcode.set_defaults(func=lambda args, config: Account(config).buy_barcode(args))
     parser_pay = subparsers.add_parser("pay", help="subtracts an amount from your balance")
     parser_pay.add_argument("amount", type=float, help="the amount to subtract")
@@ -83,7 +83,18 @@ class Account():
             self._conn.buy(self._uid, drink_found["id"])
     
     def buy_barcode(self, args):
-        pass
+        barcodes = self._conn.barcodes()
+        drinks = self._conn.drinks()
+        barcode = find_by_id(barcodes, args.barcode)
+        if not barcode:
+            print("Couldn't find a drink with this barcode.")
+            return
+        drink = find_by_id(drinks, barcode["drink"])
+        if not drink:
+            print("Couldn't find a drink with this barcode.")
+            return
+        log.info("Buying %s...", drink["name"])
+        self._conn.buy(self._uid, drink["id"])
     
     def pay(self, args):
         log.info("Paying %f...", args.amount)

@@ -1,5 +1,5 @@
 from .connection import Connection
-from .utils import fuzzy_search
+from .utils import fuzzy_search, find_by_id
 
 from tabulate import tabulate
 from datetime import datetime
@@ -29,10 +29,7 @@ def _create_table(audits, drinks):
     for audit in audits["audits"]:
         drink = None
         if audit["drink"]:
-            for d in drinks:
-                if d["id"] == audit["drink"]:
-                    drink = d
-                    break
+            drink = find_by_id(drinks, audit["drink"])
         if not drink:
             drink = {"name": "n/a"}
         yield [audit["created_at"], drink["name"], audit["difference"]]

@@ -33,6 +33,15 @@ def fuzzy_search(conn, what, search_for):
         print("No match was found.")
         return None
 
+def find_by_id(things, id):
+    log.debug("Searching for %s in %s...", id, things)
+    for thing in things:
+        if thing["id"] == id:
+            log.debug("Found %s.", thing)
+            return thing
+    log.debug("No match.")
+    return None
+
 def test_terminal_utf8():
     """Produces a warning if the system isn't correctly configured to output UTF-8."""
     from sys import stdout
