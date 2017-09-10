@@ -70,7 +70,7 @@ class Account():
         show_edit(data, "active", "active?", bool)
         show_edit(data, "audit", "log transactions?", bool)
         show_edit(data, "redirect", "redirect after buying something?", bool)
-        log.debug("Editing account. New data: %s", data)
+        log.info("Editing account. New data: %s", data)
         self._conn.modify_user(data)
     
     def logs(self, args):
@@ -80,6 +80,7 @@ class Account():
     def buy(self, args):
         drink_found = fuzzy_search(self._conn, "drink", args.drink)
         if drink_found:
+            log.info("Buying %s...", drink_found["name"])
             self._conn.buy(self._uid, drink_found["id"])
     
     def buy_barcode(self, args):

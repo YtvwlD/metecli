@@ -48,12 +48,12 @@ def setup_cmdline(global_subparsers):
     parser.set_defaults(func=do)
 
 def do(args, config):
-    log.debug("Starting setup.")
+    log.info("Starting setup.")
     url = get_url()
     config.settings["connection"]["base_url"] = url
     config.save()
-    log.debug("URL '%s' configured.", url)
+    log.info("URL '%s' configured.", url)
     uid = get_uid(url=url)
     config.settings["connection"]["uid"] = uid
     config.save()
-    log.debug("UID %i configured.", uid)
+    log.info("UID %i configured.", uid)
