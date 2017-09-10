@@ -1,4 +1,4 @@
-from . import setup, account, audits
+from . import setup, account, audits, drinks
 from .config import Config
 from .utils import test_terminal_utf8
 
@@ -13,6 +13,7 @@ def do():
     setup.setup_cmdline(subparsers)
     account.setup_cmdline(subparsers)
     audits.setup_cmdline(subparsers)
+    drinks.setup_cmdline(subparsers)
     parser.add_argument("--loglevel", type=str, help="{debug, info, *warning*, error, critical}", default="warning")
     parser.add_argument("--configpath", type=str, help="the path where to place the config file(s)")
     parser.add_argument("--configname", type=str, help="the name of the config to use")
