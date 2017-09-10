@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 from .connection import Connection
-from .utils import yn
+from .utils import yn, find_by_id
 
 import logging
 log = logging.getLogger(__name__)
@@ -27,13 +27,12 @@ def get_uid(url=None):
     while True:
         found = False
         given = input("Please enter your username (or a part of it) or your uid: ")
-        for user in users:
-            if given.isdecimal():
-                uid = int(given)
-                if user["id"] == uid:
-                    found = True
-                    break
-            else:
+        if given.isdecimal():
+            uid = int(given)
+            if find_by_id(users, uid):
+                found = True
+        else:
+            for user in users:
                 if given in user["name"]:
                     if yn("Is '{}' ({}) your account?".format(user["name"], user["email"])):
                         uid = user["id"]
