@@ -73,7 +73,7 @@ class Account():
         audits.show(self._conf, user=str(self._uid))
     
     def buy(self, args):
-        drink_found = fuzzy_search(self._conn, "drink", args.drink)
+        drink_found = fuzzy_search(self._conn().drinks(), args.drink)
         if drink_found:
             log.info("Buying %s...", drink_found["name"])
             self._conn.buy(self._uid, drink_found["id"])

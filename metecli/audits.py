@@ -37,7 +37,7 @@ def show(config, user=None, from_date=None, to_date=None):
     conn = Connection(base_url=config.settings["connection"]["base_url"])
     params = dict()
     if user:
-        user_found = fuzzy_search(conn, "user", user)
+        user_found = fuzzy_search(conn.users(), user)
         if user_found:
             params["user"] = user_found["id"]
         else:

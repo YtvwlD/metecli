@@ -11,11 +11,7 @@ def print_table(config, data, headers=[]):
         tablefmt=config.settings["display"]["table_format"],
     ))
 
-def fuzzy_search(conn, what, search_for):
-    if what == "drink":
-        things = conn.drinks()
-    elif what == "user":
-        things = conn.users()
+def fuzzy_search(things, search_for):
     possible_things = list()
     selected_thing = None
     if search_for.isdecimal():

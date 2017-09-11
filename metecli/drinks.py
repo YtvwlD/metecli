@@ -36,7 +36,7 @@ def list_drinks(args, config):
 
 def show(args, config):
     conn = Connection(base_url=config.settings["connection"]["base_url"])
-    drink = fuzzy_search(conn, "drink", args.drink)
+    drink = fuzzy_search(conn.drinks(), args.drink)
     if not drink:
         return
     print_table(config, [
