@@ -70,7 +70,7 @@ class Account():
     
     def logs(self, args):
         """The same as `audits --user <this user>`."""
-        audits.show(self._conf, user=str(self._uid))
+        audits.show(self._conf, self._conn, user=str(self._uid))
     
     def buy(self, args):
         drink_found = fuzzy_search(self._conn().drinks(), args.drink)

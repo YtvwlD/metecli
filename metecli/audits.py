@@ -1,5 +1,4 @@
-from .connection import Connection
-from .utils import fuzzy_search, find_by_id, print_table
+from .utils import fuzzy_search, find_by_id, print_table, with_connection
 
 from datetime import datetime
 from argparse import ArgumentTypeError
@@ -21,8 +20,9 @@ def setup_cmdline(global_subparsers):
     parser.add_argument("--to_date", type=valid_date, help="show only audits that were created before this date")
     parser.set_defaults(func=do)
 
-def do(args, config):
-    show(config, user=args.user, from_date=args.from_date, to_date=args.to_date)
+@with_connection
+def do(args, config, conn):
+    show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
 
 def _create_table(audits, drinks):
     for audit in audits["audits"]:
@@ -33,8 +33,7 @@ def _create_table(audits, drinks):
             drink = {"name": "n/a"}
         yield [audit["created_at"], drink["name"], audit["difference"]]
 
-def show(config, user=None, from_date=None, to_date=None):
-    conn = Connection(base_url=config.settings["connection"]["base_url"])
+def show(config, conn, user=None, from_date=None, to_date=None):
     params = dict()
     if user:
         user_found = fuzzy_search(conn.users(), user)

@@ -1,5 +1,4 @@
-from .connection import Connection
-from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit
+from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, with_connection
 
 import logging
 log = logging.getLogger(__name__)
@@ -17,8 +16,8 @@ def setup_cmdline(global_subparsers):
     parser_modify.set_defaults(func=modify)
     parser.set_defaults(func=list_drinks)
 
-def list_drinks(args, config):
-    conn = Connection(base_url=config.settings["connection"]["base_url"])
+@with_connection
+def list_drinks(args, config, conn):
     drinks = conn.drinks()
     print("All drinks:")
     print_table(config,
@@ -40,8 +39,8 @@ def list_drinks(args, config):
         ],
     )
 
-def show(args, config):
-    conn = Connection(base_url=config.settings["connection"]["base_url"])
+@with_connection
+def show(args, config, conn):
     drink = fuzzy_search(conn.drinks(), args.drink)
     if not drink:
         return
@@ -54,8 +53,8 @@ def show(args, config):
             ["active?", true_false_to_yes_no(drink["active"])],
     ])
 
-def modify(args, config):
-    conn = Connection(base_url=config.settings["connection"]["base_url"])
+@with_connection
+def modify(args, config, conn):
     data = fuzzy_search(conn.drinks(), args.drink)
     if not data:
         return
