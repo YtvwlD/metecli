@@ -1,5 +1,8 @@
 from .connection import Connection
-from .utils import true_false_to_yes_no, fuzzy_search, print_table
+from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit
+
+import logging
+log = logging.getLogger(__name__)
 
 def setup_cmdline(global_subparsers):
     parser = global_subparsers.add_parser("drinks", help="show or modify drinks")
@@ -9,6 +12,9 @@ def setup_cmdline(global_subparsers):
     parser_show = subparsers.add_parser("show", help="display detailed information about a drink")
     parser_show.add_argument("drink", help="the drink to display")
     parser_show.set_defaults(func=show)
+    parser_modify = subparsers.add_parser("modify", help="edits a drink")
+    parser_modify.add_argument("drink", help="the drink to modify")
+    parser_modify.set_defaults(func=modify)
     parser.set_defaults(func=list_drinks)
 
 def list_drinks(args, config):
@@ -47,3 +53,17 @@ def show(args, config):
             ["caffeine", drink["caffeine"]],
             ["active?", true_false_to_yes_no(drink["active"])],
     ])
+
+def modify(args, config):
+    conn = Connection(base_url=config.settings["connection"]["base_url"])
+    data = fuzzy_search(conn.drinks(), args.drink)
+    if not data:
+        return
+    log.debug("Editing drink. Old data: %s", data)
+    show_edit(data, "name", "name", str)
+    show_edit(data, "price", "price", float)
+    show_edit(data, "bottle_size", "bottle size", float)
+    show_edit(data, "caffeine", "caffeine", int)
+    show_edit(data, "active", "active?", bool)
+    log.info("Editing drink. New data: %s", data)
+    conn.modify_drink(data)

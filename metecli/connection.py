@@ -62,6 +62,11 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/drinks.json"))
         return r.json()
     
+    def modify_drink(self, drink):
+        """Modifys an existing drink."""
+        r = requests.patch(urljoin(self._base_url, "/drinks/{}.json").format(drink["id"]), json={"drink": drink})
+        assert r.ok
+    
     def barcodes(self):
         """Lists all barcodes."""
         r = requests.get(urljoin(self._base_url, "/barcodes.json"))

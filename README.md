@@ -142,3 +142,14 @@ $ metecli drinks show Mate
 | active?     | yes    |
 +-------------+--------+
 ```
+
+### modify a drink
+
+```
+$ metecli drinks modify Mate
+name [Mate]: 
+price [1.5]: 
+bottle size [0.5]: 
+caffeine [None]: 100
+active? [yes]:
+```
