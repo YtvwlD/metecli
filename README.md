@@ -2,8 +2,8 @@
 
 [![Code Health](https://landscape.io/github/YtvwlD/metecli/master/landscape.svg?style=plastic)](https://landscape.io/github/YtvwlD/metecli/master)
 
-This is a CLI for [mete](/chaosdorf/mete/)
-(or any other server supporting the [Space-Market API](/Space-Market/API) [v1](https://space-market.github.io/API/preview/v1)).
+This is a CLI for [mete](https://github.com/chaosdorf/mete/)
+(or any other server supporting the [Space-Market API](https://github.com/Space-Market/API) [v1](https://space-market.github.io/API/preview/v1)).
 
 ## Getting Started
 
