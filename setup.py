@@ -6,9 +6,13 @@ from setuptools import setup, find_packages
 from os import path
 here = path.abspath(path.dirname(__file__))
 
-# Get the long description from the README file
-with open(path.join(here, 'README.md')) as f:
-    long_description = f.read()
+# taken from https://stackoverflow.com/a/23265673/2192464
+try:
+    from pypandoc import convert
+    read_md = lambda f: convert(f, 'rst')
+except ImportError:
+    print("warning: pypandoc module not found, could not convert Markdown to RST")
+    read_md = lambda f: open(f, 'r').read()
 
 setup(
     name='metecli',
@@ -17,7 +21,7 @@ setup(
     version='0.4.0',
 
     description='a cli for mete',
-    long_description=long_description,
+    long_description=read_md(path.join(here, 'README.md')),
 
     # The project's main homepage.
     url='https://github.com/YtvwlD/metecli',
