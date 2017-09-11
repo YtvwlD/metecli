@@ -14,7 +14,7 @@ setup(
     name='metecli',
 
     # Versions should comply with PEP440.
-    version='0.3.0',
+    version='0.4.0',
 
     description='a cli for mete',
     long_description=long_description,
