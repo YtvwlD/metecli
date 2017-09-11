@@ -1,11 +1,9 @@
 from .connection import Connection
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table
 
 import logging
 log = logging.getLogger(__name__)
-
-from tabulate import tabulate
 
 def setup_cmdline(global_subparsers):
     parser = global_subparsers.add_parser("account", help="show or modify an account")
@@ -54,10 +52,7 @@ class Account():
             ["log transactions?", true_false_to_yes_no(data["audit"])],
             ["redirect after buying something?", true_false_to_yes_no(data["redirect"])]
         ]
-        print(tabulate(
-            table_data,
-            tablefmt=self._conf.settings["display"]["table_format"]
-        ))
+        print_table(self._conf, table_data)
         
     def modify(self, args):
         """Modify settings."""

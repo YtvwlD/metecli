@@ -1,7 +1,5 @@
 from .connection import Connection
-from .utils import true_false_to_yes_no, fuzzy_search
-
-from tabulate import tabulate
+from .utils import true_false_to_yes_no, fuzzy_search, print_table
 
 def setup_cmdline(global_subparsers):
     parser = global_subparsers.add_parser("drinks", help="show or modify drinks")
@@ -17,7 +15,7 @@ def list_drinks(args, config):
     conn = Connection(base_url=config.settings["connection"]["base_url"])
     drinks = conn.drinks()
     print("All drinks:")
-    print(tabulate(
+    print_table(config,
         sorted([[
             drink["id"],
             drink["name"],
@@ -34,22 +32,18 @@ def list_drinks(args, config):
             "price",
             "active?"
         ],
-        tablefmt=config.settings["display"]["table_format"],
-    ))
+    )
 
 def show(args, config):
     conn = Connection(base_url=config.settings["connection"]["base_url"])
     drink = fuzzy_search(conn, "drink", args.drink)
     if not drink:
         return
-    print(tabulate(
-        [
+    print_table(config, [
             ["ID", drink["id"]],
             ["name", drink["name"]],
             ["price", "{:.2f} €".format(float(drink["price"]))],
             ["bottle size", drink["bottle_size"]],
             ["caffeine", drink["caffeine"]],
             ["active?", true_false_to_yes_no(drink["active"])],
-        ],
-        tablefmt=config.settings["display"]["table_format"]
-    ))
+    ])

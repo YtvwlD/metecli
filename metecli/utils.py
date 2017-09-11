@@ -1,6 +1,15 @@
+from tabulate import tabulate
+
 import logging
 
 log = logging.getLogger(__name__)
+
+def print_table(config, data, headers=[]):
+    print(tabulate(
+        data,
+        headers=headers,
+        tablefmt=config.settings["display"]["table_format"],
+    ))
 
 def fuzzy_search(conn, what, search_for):
     if what == "drink":

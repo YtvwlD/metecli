@@ -1,7 +1,6 @@
 from .connection import Connection
-from .utils import fuzzy_search, find_by_id
+from .utils import fuzzy_search, find_by_id, print_table
 
-from tabulate import tabulate
 from datetime import datetime
 from argparse import ArgumentTypeError
 
@@ -55,4 +54,4 @@ def show(config, user=None, from_date=None, to_date=None):
     if user:
         print(" for user {}".format(user), end="")
     print(":")
-    print(tabulate(_create_table(audits, drinks), headers=["time", "drink", "difference"], tablefmt=config.settings["display"]["table_format"]))
+    print_table(config, _create_table(audits, drinks), headers=["time", "drink", "difference"])
