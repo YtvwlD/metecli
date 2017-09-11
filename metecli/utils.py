@@ -12,7 +12,7 @@ def with_connection(func):
         return func(args, config, conn)
     return new_func
 
-def print_table(config, data, headers=[]):
+def print_table(config, data, headers=tuple()):
     print(tabulate(
         data,
         headers=headers,
