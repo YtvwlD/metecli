@@ -45,6 +45,12 @@ class Config():
                         log.error("Unknown platform '%s'. Don't know where to store config.", sys.platform)
                         sys.exit(-1)
             log.debug("Found config base path: %s", config_base_path)
+            if not os.path.exists(config_base_path):
+                log.error("Config base path '%s' doesn't exist.", config_base_path)
+                sys.exit(-1)
+            if not os.path.isdir(config_base_path):
+                log.error("Config base path '%s' exists but is not a directory.")
+                sys.exit(-1)
             config_path = os.path.join(config_base_path, "metecli")
         if not os.path.exists(config_path):
             log.info("Configuration path '%s' doesn't exist. Creating.", config_path)
