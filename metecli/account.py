@@ -1,6 +1,6 @@
 from .connection import Connection
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, with_connection
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, with_connection, yn
 
 import logging
 log = logging.getLogger(__name__)
@@ -10,6 +10,8 @@ def setup_cmdline(global_subparsers):
     subparsers = parser.add_subparsers(help="action")
     parser_create = subparsers.add_parser("create", help="creates a new account")
     parser_create.set_defaults(func=create)
+    parser_select = subparsers.add_parser("select", help="select the account to use")
+    parser_select.set_defaults(func=select)
     parser_show = subparsers.add_parser("show", help="display some information")
     parser_show.set_defaults(func=lambda args, config: Account(config).show(args))
     parser_modify = subparsers.add_parser("modify", help="modify your settings")
@@ -47,6 +49,35 @@ def create(args, config, conn):
     log.debug("Creating new user. Data: %s", data)
     data = conn.add_user(data)
     log.info("Created new user. Data: %s", data)
+
+def get_uid(conn):
+    log.info("Loading all users...")
+    users = conn.users()
+    while True:
+        found = False
+        given = input("Please enter your username (or a part of it) or your uid: ")
+        if given.isdecimal():
+            uid = int(given)
+            if find_by_id(users, uid):
+                found = True
+        else:
+            for user in users:
+                if given in user["name"]:
+                    if yn("Is '{}' ({}) your account?".format(user["name"], user["email"])):
+                        uid = user["id"]
+                        found = True
+                        break
+        if found:
+            return uid
+        else:
+            print("No matching account found. Please try again.")
+
+@with_connection
+def select(args, config, conn):
+    uid = get_uid(conn)
+    config.settings["connection"]["uid"] = uid
+    config.save()
+    log.info("UID %i configured.", uid)
 
 class Account():
     def __init__(self, config):

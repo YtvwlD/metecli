@@ -1,6 +1,7 @@
 from urllib.parse import urlparse
 from .connection import Connection
-from .utils import yn, find_by_id
+from .utils import yn
+from . import account
 
 import logging
 log = logging.getLogger(__name__)
@@ -21,28 +22,6 @@ def get_url():
             continue
         return given
 
-def get_uid(url=None):
-    conn = Connection(base_url=url)
-    users = conn.users()
-    while True:
-        found = False
-        given = input("Please enter your username (or a part of it) or your uid: ")
-        if given.isdecimal():
-            uid = int(given)
-            if find_by_id(users, uid):
-                found = True
-        else:
-            for user in users:
-                if given in user["name"]:
-                    if yn("Is '{}' ({}) your account?".format(user["name"], user["email"])):
-                        uid = user["id"]
-                        found = True
-                        break
-        if found:
-            return uid
-        else:
-            print("No matching account found. Please try again.")
-
 def setup_cmdline(global_subparsers):
     parser = global_subparsers.add_parser("setup", help="setup the connection and select an account")
     parser.set_defaults(func=do)
@@ -53,7 +32,5 @@ def do(args, config):
     config.settings["connection"]["base_url"] = url
     config.save()
     log.info("URL '%s' configured.", url)
-    uid = get_uid(url=url)
-    config.settings["connection"]["uid"] = uid
-    config.save()
-    log.info("UID %i configured.", uid)
+    account.select(args, config)
+    log.info("Setup finished.")
