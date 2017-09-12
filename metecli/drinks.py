@@ -8,6 +8,8 @@ def setup_cmdline(global_subparsers):
     subparsers = parser.add_subparsers(help="action")
     parser_list = subparsers.add_parser("list", help="lists all drinks")
     parser_list.set_defaults(func=list_drinks)
+    parser_add = subparsers.add_parser("add", help="creates a new drink")
+    parser_add.set_defaults(func=add_drink)
     parser_show = subparsers.add_parser("show", help="display detailed information about a drink")
     parser_show.add_argument("drink", help="the drink to display")
     parser_show.set_defaults(func=show)
@@ -53,16 +55,28 @@ def show(args, config, conn):
             ["active?", true_false_to_yes_no(drink["active"])],
     ])
 
+def edit_drink(data):
+    show_edit(data, "name", "name", str)
+    show_edit(data, "price", "price", float)
+    show_edit(data, "bottle_size", "bottle size", float)
+    show_edit(data, "caffeine", "caffeine", int)
+    show_edit(data, "active", "active?", bool)
+
+@with_connection
+def add_drink(args, config, conn):
+    data = conn.get_drink_defaults()
+    log.debug("Creating a new drink. Default data: %s", data)
+    edit_drink(data)
+    log.debug("Creating a new drink. Data: %s", data)
+    data = conn.create_drink(data)
+    log.info("Created a new drink. Data: %s", data)
+
 @with_connection
 def modify(args, config, conn):
     data = fuzzy_search(conn.drinks(), args.drink)
     if not data:
         return
     log.debug("Editing drink. Old data: %s", data)
-    show_edit(data, "name", "name", str)
-    show_edit(data, "price", "price", float)
-    show_edit(data, "bottle_size", "bottle size", float)
-    show_edit(data, "caffeine", "caffeine", int)
-    show_edit(data, "active", "active?", bool)
+    edit_drink(data)
     log.info("Editing drink. New data: %s", data)
     conn.modify_drink(data)
