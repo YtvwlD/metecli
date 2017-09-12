@@ -86,6 +86,9 @@ def show_edit(dict, key, prompt, type):
         given = input(final_prompt)
         if not given:
             given = old_value
+            if old_value is None:
+                new_value = old_value
+                break
         if type == str:
             if given.strip():
                 new_value = given
