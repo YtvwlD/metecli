@@ -40,6 +40,16 @@ class Connection():
         r = requests.patch(urljoin(self._base_url, "/users/{}.json").format(user["id"]), json={"user": user})
         assert r.ok
     
+    def get_user_defaults(self):
+        """Gets the default settings for creating a new user."""
+        r = requests.get(urljoin(self._base_url, "/users/new.json"))
+        return r.json()
+    
+    def add_user(self, user):
+        """Creates a new user."""
+        r = requests.post(urljoin(self._base_url, "/users.json"), json=user)
+        return r.json()
+    
     def buy(self, uid, did):
         """Buy a drink."""
         r = requests.get(urljoin(self._base_url, "/users/{}/buy.json?drink={}".format(uid, did)))

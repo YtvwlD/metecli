@@ -1,6 +1,6 @@
 from .connection import Connection
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, with_connection
 
 import logging
 log = logging.getLogger(__name__)
@@ -8,6 +8,8 @@ log = logging.getLogger(__name__)
 def setup_cmdline(global_subparsers):
     parser = global_subparsers.add_parser("account", help="show or modify an account")
     subparsers = parser.add_subparsers(help="action")
+    parser_create = subparsers.add_parser("create", help="creates a new account")
+    parser_create.set_defaults(func=create)
     parser_show = subparsers.add_parser("show", help="display some information")
     parser_show.set_defaults(func=lambda args, config: Account(config).show(args))
     parser_modify = subparsers.add_parser("modify", help="modify your settings")
@@ -27,6 +29,24 @@ def setup_cmdline(global_subparsers):
     parser_logs = subparsers.add_parser("logs", help="display the logs")
     parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
     parser.set_defaults(func=lambda args, config: Account(config).show(args))
+
+def edit_user(data):
+    show_edit(data, "name", "name", str)
+    show_edit(data, "email", "email", "email")
+    show_edit(data, "balance", "account balance", float)
+    data["balance"] = str(data["balance"])
+    show_edit(data, "active", "active?", bool)
+    show_edit(data, "audit", "log transactions?", bool)
+    show_edit(data, "redirect", "redirect after buying something?", bool)
+
+@with_connection
+def create(args, config, conn):
+    data = conn.get_user_defaults()
+    log.debug("Creating new user. Default data: %s", data)
+    edit_user(data)
+    log.debug("Creating new user. Data: %s", data)
+    data = conn.add_user(data)
+    log.info("Created new user. Data: %s", data)
 
 class Account():
     def __init__(self, config):
@@ -58,13 +78,7 @@ class Account():
         """Modify settings."""
         data = self._conn.get_user(self._uid)
         log.debug("Editing account. Old data: %s", data)
-        show_edit(data, "name", "name", str)
-        show_edit(data, "email", "email", "email")
-        show_edit(data, "balance", "account balance", float)
-        data["balance"] = str(data["balance"])
-        show_edit(data, "active", "active?", bool)
-        show_edit(data, "audit", "log transactions?", bool)
-        show_edit(data, "redirect", "redirect after buying something?", bool)
+        edit_user(data)
         log.info("Editing account. New data: %s", data)
         self._conn.modify_user(data)
     
