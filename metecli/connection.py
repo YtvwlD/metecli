@@ -37,7 +37,7 @@ class Connection():
     
     def modify_user(self, user):
         """Modifys an existing user."""
-        r = requests.patch(urljoin(self._base_url, "/users/{}.json").format(user["id"]), json={"user": user})
+        r = requests.patch(urljoin(self._base_url, "/users/{}.json").format(user["id"]), json=user)
         assert r.ok
     
     def delete_user(self, uid):
@@ -61,7 +61,7 @@ class Connection():
     
     def pay(self, uid, amount):
         """Pay an amount."""
-        r = requests.get(urljoin(self._base_url, "/users/{}/payment.json?amount={}".format(uid, amount))) # TODO: pay.json
+        r = requests.get(urljoin(self._base_url, "/users/{}/payment.json?amount={}".format(uid, amount)))
         print(r.text)
         assert r.ok
     
@@ -78,7 +78,7 @@ class Connection():
     
     def modify_drink(self, drink):
         """Modifys an existing drink."""
-        r = requests.patch(urljoin(self._base_url, "/drinks/{}.json").format(drink["id"]), json={"drink": drink})
+        r = requests.patch(urljoin(self._base_url, "/drinks/{}.json").format(drink["id"]), json=drink)
         assert r.ok
     
     def get_drink_defaults(self):
