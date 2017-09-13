@@ -32,5 +32,8 @@ def do(args, config):
     config.settings["connection"]["base_url"] = url
     config.save()
     log.info("URL '%s' configured.", url)
-    account.select(args, config)
+    if yn("Do want to setup an account now?"):
+        if not yn("Do you already have an account?"):
+            account.create(args, config)
+        account.select(args, config)
     log.info("Setup finished.")
