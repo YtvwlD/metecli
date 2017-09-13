@@ -17,6 +17,7 @@ def setup_cmdline(global_subparsers):
     parser_modify = subparsers.add_parser("modify", help="modify your settings")
     parser_modify.set_defaults(func=lambda args, config: Account(config).modify(args))
     parser_delete = subparsers.add_parser("delete", help="deletes your account")
+    parser_delete.add_argument("--force", action="store_true", help="don't confirm the deletion")
     parser_delete.set_defaults(func=lambda args, config: Account(config).delete(args))
     parser_buy = subparsers.add_parser("buy", help="buys a drink")
     parser_buy.add_argument("drink", type=str, help="the drink to buy")
@@ -152,27 +153,28 @@ class Account():
     
     def delete(self, args):
         user = self._conn.get_user(self._uid)
-        log.debug("About to delete account '%s'.", user["name"])
-        print("You are about to delete the account '{}'.".format(user["name"]))
-        if not yn("Are you sure about this?"):
-            log.debug("Deletion cancelled.")
-            return
-        given = input("Then please enter the name of the account you want to delete: ")
-        if given != user["name"]:
-            log.debug("Deletion cancelled.")
-            print("This was not correct. Cancelling deletion.")
-            return
-        given = input("Then please enter the email address of the account you want to delete: ")
-        if given != user["email"]:
-            log.debug("Deletion cancelled.")
-            print("This was not correct. Cancelling deletion.")
-            return
-        print("You are about to delete this account:")
-        self._print_user(user)
-        print("This cannot be undone.")
-        if not yn("Are you really sure about this?"):
-            log.debug("Deletion cancelled.")
-            return
+        if not args.force:
+            log.debug("About to delete account '%s'.", user["name"])
+            print("You are about to delete the account '{}'.".format(user["name"]))
+            if not yn("Are you sure about this?"):
+                log.debug("Deletion cancelled.")
+                return
+            given = input("Then please enter the name of the account you want to delete: ")
+            if given != user["name"]:
+                log.debug("Deletion cancelled.")
+                print("This was not correct. Cancelling deletion.")
+                return
+            given = input("Then please enter the email address of the account you want to delete: ")
+            if given != user["email"]:
+                log.debug("Deletion cancelled.")
+                print("This was not correct. Cancelling deletion.")
+                return
+            print("You are about to delete this account:")
+            self._print_user(user)
+            print("This cannot be undone.")
+            if not yn("Are you really sure about this?"):
+                log.debug("Deletion cancelled.")
+                return
         del self._conf.settings["connection"]["uid"]
         del self._uid
         self._conf.save()
