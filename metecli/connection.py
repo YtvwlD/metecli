@@ -40,6 +40,10 @@ class Connection():
         r = requests.patch(urljoin(self._base_url, "/users/{}.json").format(user["id"]), json={"user": user})
         assert r.ok
     
+    def delete_user(self, uid):
+        r = requests.delete(urljoin(self._base_url, "/users/{}.json".format(uid)))
+        assert r.ok
+    
     def get_user_defaults(self):
         """Gets the default settings for creating a new user."""
         r = requests.get(urljoin(self._base_url, "/users/new.json"))
