@@ -123,6 +123,9 @@ def show_edit(dict, key, prompt, type):
             if "@" in given:
                 new_value = given
                 break
+            elif not given: # empty address
+                new_value = given
+                break
             else:
                 print("This is not a valid email adress.")
                 continue
