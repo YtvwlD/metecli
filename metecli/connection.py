@@ -87,6 +87,11 @@ class Connection():
         r = requests.post(urljoin(self._base_url, "/drinks.json"), json=drink)
         return r.json()
     
+    def delete_drink(self, drink_id):
+        """Deletes an existing drink."""
+        r = requests.delete(urljoin(self._base_url, "/drinks/{}.json").format(drink_id))
+        assert r.ok
+    
     def barcodes(self):
         """Lists all barcodes."""
         r = requests.get(urljoin(self._base_url, "/barcodes.json"))

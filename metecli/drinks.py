@@ -1,4 +1,4 @@
-from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, with_connection
+from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, with_connection, yn
 
 import logging
 log = logging.getLogger(__name__)
@@ -16,6 +16,9 @@ def setup_cmdline(global_subparsers):
     parser_modify = subparsers.add_parser("modify", help="edits a drink")
     parser_modify.add_argument("drink", help="the drink to modify")
     parser_modify.set_defaults(func=modify)
+    parser_delete = subparsers.add_parser("delete", help="deletes a drink")
+    parser_delete.add_argument("drink", help="the drink to delete")
+    parser_delete.set_defaults(func=delete)
     parser.set_defaults(func=list_drinks)
 
 @with_connection
@@ -46,6 +49,9 @@ def show(args, config, conn):
     drink = fuzzy_search(conn.drinks(), args.drink)
     if not drink:
         return
+    print_drink(drink, config)
+
+def print_drink(drink, config):
     print_table(config, [
             ["ID", drink["id"]],
             ["name", drink["name"]],
@@ -80,3 +86,27 @@ def modify(args, config, conn):
     edit_drink(data)
     log.info("Editing drink. New data: %s", data)
     conn.modify_drink(data)
+
+@with_connection
+def delete(args, config, conn):
+    drink = fuzzy_search(conn.drinks(), args.drink)
+    if not drink:
+        return
+    log.debug("About to delete drink %s.", drink["name"])
+    print("You are about to delete the drink '{}'.".format(drink["name"]))
+    if not yn("Are you sure about this?"):
+        log.debug("Deletion cancelled.")
+        return
+    given = input("Then please enter the name of the drink you want to delete: ")
+    if given != drink["name"]:
+        log.debug("Deletion cancelled.")
+        print("This was not correct. Cancelling deletion.")
+        return
+    print("You are about to delete this drink:")
+    print_drink(drink, config)
+    print("This cannot be undone.")
+    if not yn("Are you really sure about this?"):
+        log.debug("Deletion cancelled.")
+        return
+    conn.delete_drink(drink["id"])
+    log.info("Deleted drink '%s'.", drink["name"])
