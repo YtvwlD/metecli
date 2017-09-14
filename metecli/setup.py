@@ -29,7 +29,7 @@ def setup_cmdline(global_subparsers):
 def do(args, config):
     log.info("Starting setup.")
     url = get_url()
-    config.settings["connection"]["base_url"] = url
+    config["connection"]["base_url"] = url
     config.save()
     log.info("URL '%s' configured.", url)
     if yn("Do want to setup an account now?"):

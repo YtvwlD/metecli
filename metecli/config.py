@@ -19,6 +19,21 @@ class Config():
         self._open_or_create()
         self._migrate()
     
+    def __getitem__(self, key):
+        return self._settings[key]
+    
+    def __setitem__(self, key, value):
+        self._settings[key] = value
+    
+    def __delitem__(self, key):
+        del self._settings[key]
+    
+    def __contains__(self, key):
+        return key in self._settings
+    
+    def __repr__(self):
+        return repr(self._settings)
+    
     def _search_config_file_path(self, path, name):
         if path:
             log.info("Config path was specified: %s", path)
@@ -68,21 +83,21 @@ class Config():
         if(os.path.exists(self.config_file_path)):
             log.debug("Config file does already exist. Opening.")
             with open(self.config_file_path, "rt") as config_file:
-                self.settings = yaml.load(config_file)
+                self._settings = yaml.load(config_file)
         else:
             log.debug("Config file doesn't exist yet. Creating.")
             with open(self.config_file_path, "wt") as config_file:
                 pass
-            self.settings = dict(DEFAULT_SETTINGS)
+            self._settings = dict(DEFAULT_SETTINGS)
             self.save()
     
     def _migrate(self):
-        if "version" not in self.settings: # v0 -> v1
+        if "version" not in self: # v0 -> v1
             log.info("Configuration doesn't have a version. Asssuming v1.")
-            self.settings["version"] = 1
+            self["version"] = 1
             self.save()
     
     def save(self):
         log.debug("Saving config....")
         with open(self.config_file_path, "wt") as config_file:
-            yaml.dump(self.settings, stream=config_file)
+            yaml.dump(self._settings, stream=config_file)

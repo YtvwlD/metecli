@@ -78,21 +78,21 @@ def get_uid(conn):
 @with_connection
 def select(args, config, conn):
     uid = get_uid(conn)
-    config.settings["connection"]["uid"] = uid
+    config["connection"]["uid"] = uid
     config.save()
     log.info("UID %i configured.", uid)
 
 class Account():
     def __init__(self, config):
         self._conf = config
-        if "base_url" not in self._conf.settings["connection"]:
+        if "base_url" not in self._conf["connection"]:
             raise Exception("Connection is not configured yet. Account management isn't possible.")
         else:
-            self._conn = Connection(base_url=config.settings["connection"]["base_url"])
-        if "uid" not in self._conf.settings["connection"]:
+            self._conn = Connection(base_url=config["connection"]["base_url"])
+        if "uid" not in self._conf["connection"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
-            self._uid = self._conf.settings["connection"]["uid"]
+            self._uid = self._conf["connection"]["uid"]
     
     def show(self, args):
         """Displays information about this user."""
@@ -175,7 +175,7 @@ class Account():
             if not yn("Are you really sure about this?"):
                 log.debug("Deletion cancelled.")
                 return
-        del self._conf.settings["connection"]["uid"]
+        del self._conf["connection"]["uid"]
         del self._uid
         self._conf.save()
         self._conn.delete_user(user["id"])

@@ -8,11 +8,11 @@ log = logging.getLogger(__name__)
 
 def with_connection(func):
     def new_func(args, config):
-        if "connection" not in config.settings:
+        if "connection" not in config:
             raise Exception("The connection is not configured, yet.")
-        if "base_url" not in config.settings["connection"]:
+        if "base_url" not in config["connection"]:
             raise Exception("The connection is not configured, yet.")
-        conn = Connection(base_url=config.settings["connection"]["base_url"])
+        conn = Connection(base_url=config["connection"]["base_url"])
         return func(args, config, conn)
     return new_func
 
@@ -20,7 +20,7 @@ def print_table(config, data, headers=tuple()):
     print(tabulate(
         data,
         headers=headers,
-        tablefmt=config.settings["display"]["table_format"],
+        tablefmt=config["display"]["table_format"],
     ))
 
 def fuzzy_search(things, search_for):
