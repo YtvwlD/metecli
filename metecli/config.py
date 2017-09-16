@@ -83,7 +83,7 @@ class Config():
         if(os.path.exists(self.config_file_path)):
             log.debug("Config file does already exist. Opening.")
             with open(self.config_file_path, "rt") as config_file:
-                self._settings = yaml.load(config_file)
+                self._settings = yaml.safe_load(config_file)
         else:
             log.debug("Config file doesn't exist yet. Creating.")
             with open(self.config_file_path, "wt") as config_file:
@@ -100,4 +100,4 @@ class Config():
     def save(self):
         log.debug("Saving config....")
         with open(self.config_file_path, "wt") as config_file:
-            yaml.dump(self._settings, stream=config_file, default_flow_style=False)
+            yaml.safe_dump(self._settings, stream=config_file, default_flow_style=False)
