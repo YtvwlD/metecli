@@ -100,4 +100,4 @@ class Config():
     def save(self):
         log.debug("Saving config....")
         with open(self.config_file_path, "wt") as config_file:
-            yaml.dump(self._settings, stream=config_file)
+            yaml.dump(self._settings, stream=config_file, default_flow_style=False)
