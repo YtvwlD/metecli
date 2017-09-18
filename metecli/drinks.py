@@ -126,7 +126,7 @@ def barcodes_add(args, config, conn, drink):
     barcode["id"] = args.barcode
     log.debug("Creating new barcode '%s' for drink '%s'.", barcode["id"], drink["name"])
     barcode = conn.create_barcode(barcode)
-    log.info("Created new barcode '%s' for dirnk '%s'.", barcode["id"], drink["name"])
+    log.info("Created new barcode '%s' for drink '%s'.", barcode["id"], drink["name"])
 
 @with_connection
 @with_drink
