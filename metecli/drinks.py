@@ -16,6 +16,12 @@ def setup_cmdline(global_subparsers):
     parser_modify = subparsers.add_parser("modify", help="edits a drink")
     parser_modify.add_argument("drink", help="the drink to modify")
     parser_modify.set_defaults(func=modify)
+    parser_barcodes = subparsers.add_parser("barcodes", help="manage barcodes for this drink")
+    parser_barcodes.add_argument("drink", help="the drink")
+    parser_barcodes.set_defaults(func=barcodes_list)
+    subparsers_barcodes = parser_barcodes.add_subparsers(help="action")
+    parser_barcodes_list = subparsers_barcodes.add_parser("list", help="list all barcodes for this drink")
+    parser_barcodes_list.set_defaults(func=barcodes_list)
     parser_delete = subparsers.add_parser("delete", help="deletes a drink")
     parser_delete.add_argument("drink", help="the drink to delete")
     parser_delete.add_argument("--force", action="store_true", help="don't confirm the deletion")
@@ -87,6 +93,18 @@ def modify(args, config, conn):
     edit_drink(data)
     log.info("Editing drink. New data: %s", data)
     conn.modify_drink(data)
+
+@with_connection
+def barcodes_list(args, config, conn):
+    drink = fuzzy_search(conn.drinks(), args.drink)
+    if not drink:
+        return
+    all_barcodes = conn.barcodes()
+    barcodes = list()
+    for barcode in all_barcodes:
+        if barcode["drink"] == drink["id"]:
+            barcodes.append([barcode["id"]])
+    print_table(config, barcodes)
 
 @with_connection
 def delete(args, config, conn):
