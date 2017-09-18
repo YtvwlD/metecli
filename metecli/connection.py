@@ -101,6 +101,17 @@ class Connection():
         r = requests.get(urljoin(self._base_url, "/barcodes.json"))
         return r.json()
     
+    def get_barcode_defaults(self):
+        """Get the defaults for creating new barcodes."""
+        r = requests.get(urljoin(self._base_url, "/barcodes/new.json"))
+        return r.json()
+    
+    def create_barcode(self, barcode):
+        """Creates a new barcode."""
+        r = requests.post(urljoin(self._base_url, "/barcodes.json"), json=barcode)
+        assert r.ok
+        return r.json()
+    
     def try_connect(self):
         """Tries to connect to the server."""
         try:
