@@ -18,10 +18,21 @@ def setup_cmdline(global_subparsers):
     subparsers = parser.add_subparsers(help="action")
     parser_display = subparsers.add_parser("display", help="displays the current config")
     parser_display.set_defaults(func=display)
+    parser_get = subparsers.add_parser("get", help="retrieves a specific value")
+    parser_get.add_argument("key", help="the key to search for")
+    parser_get.set_defaults(func=get)
     parser.set_defaults(func=display)
 
 def display(args, config):
     print(yaml.safe_dump(config._settings, default_flow_style=False))
+
+def get(args, config):
+    path = args.key.split(".")
+    current = config
+    for part in path:
+        if part:
+            current = current[part]
+    print(current)
 
 class Config():
     def __init__(self, path=None, name=None):
