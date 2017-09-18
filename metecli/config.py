@@ -13,6 +13,16 @@ DEFAULT_SETTINGS = {
     }
 }
 
+def setup_cmdline(global_subparsers):
+    parser = global_subparsers.add_parser("config", help="modify the configuration")
+    subparsers = parser.add_subparsers(help="action")
+    parser_display = subparsers.add_parser("display", help="displays the current config")
+    parser_display.set_defaults(func=display)
+    parser.set_defaults(func=display)
+
+def display(args, config):
+    print(yaml.safe_dump(config._settings, default_flow_style=False))
+
 class Config():
     def __init__(self, path=None, name=None):
         self._search_config_file_path(path, name)
