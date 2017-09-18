@@ -57,11 +57,17 @@ def list_drinks(args, config, conn):
         ],
     )
 
+def with_drink(func):
+    def new_func(args, config, conn):
+        drink = fuzzy_search(conn.drinks(), args.drink)
+        if not drink:
+            return
+        return func(args, config, conn, drink)
+    return new_func
+
 @with_connection
-def show(args, config, conn):
-    drink = fuzzy_search(conn.drinks(), args.drink)
-    if not drink:
-        return
+@with_drink
+def show(args, config, conn, drink):
     print_drink(drink, config)
 
 def print_drink(drink, config):
@@ -91,10 +97,8 @@ def add_drink(args, config, conn):
     log.info("Created a new drink. Data: %s", data)
 
 @with_connection
-def modify(args, config, conn):
-    data = fuzzy_search(conn.drinks(), args.drink)
-    if not data:
-        return
+@with_drink
+def modify(args, config, conn, data):
     log.debug("Editing drink. Old data: %s", data)
     edit_drink(data)
     log.info("Editing drink. New data: %s", data)
@@ -109,18 +113,14 @@ def _get_barcodes_for_drink(conn, drink):
             yield barcode["id"]
 
 @with_connection
-def barcodes_list(args, config, conn):
-    drink = fuzzy_search(conn.drinks(), args.drink)
-    if not drink:
-        return
+@with_drink
+def barcodes_list(args, config, conn, drink):
     barcodes = _get_barcodes_for_drink(conn, drink)
     print_table(config, [[barcode] for barcode in barcodes])
 
 @with_connection
-def barcodes_add(args, config, conn):
-    drink = fuzzy_search(conn.drinks(), args.drink)
-    if not drink:
-        return
+@with_drink
+def barcodes_add(args, config, conn, drink):
     barcode = conn.get_barcode_defaults()
     barcode["drink"] = drink["id"]
     barcode["id"] = args.barcode
@@ -129,10 +129,8 @@ def barcodes_add(args, config, conn):
     log.info("Created new barcode '%s' for dirnk '%s'.", barcode["id"], drink["name"])
 
 @with_connection
-def barcodes_delete(args, config, conn):
-    drink = fuzzy_search(conn.drinks(), args.drink)
-    if not drink:
-        return
+@with_drink
+def barcodes_delete(args, config, conn, drink):
     barcodes = _get_barcodes_for_drink(conn, drink)
     if not args.barcode in list(barcodes):
         print("This barcode doesn't exist for this drink.")
@@ -141,10 +139,8 @@ def barcodes_delete(args, config, conn):
     log.info("Deleted barcode '%s'.", args.barcode)
 
 @with_connection
-def delete(args, config, conn):
-    drink = fuzzy_search(conn.drinks(), args.drink)
-    if not drink:
-        return
+@with_drink
+def delete(args, config, conn, drink):
     if not args.force:
         log.debug("About to delete drink %s.", drink["name"])
         print("You are about to delete the drink '{}'.".format(drink["name"]))
