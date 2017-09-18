@@ -112,6 +112,11 @@ class Connection():
         assert r.ok
         return r.json()
     
+    def delete_barcode(self, barcode_id):
+        """Delete a barcode."""
+        r = requests.delete(urljoin(self._base_url, "/barcodes/{}.json").format(barcode_id))
+        assert r.ok
+    
     def try_connect(self):
         """Tries to connect to the server."""
         try:
