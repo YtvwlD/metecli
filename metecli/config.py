@@ -31,6 +31,15 @@ def setup_cmdline(global_subparsers):
 def display(args, config):
     print(yaml.safe_dump(config._settings, default_flow_style=False))
 
+def handle_KeyError(func):
+    def new_func(args, config):
+        try:
+            return func(args, config)
+        except KeyError:
+            print("This configuration key doesn't exist.")
+    return new_func
+
+@handle_KeyError
 def get(args, config):
     path = args.key.split(".")
     current = config
@@ -39,6 +48,7 @@ def get(args, config):
             current = current[part]
     print(current)
 
+@handle_KeyError
 def set(args, config):
     path = args.key.split(".")
     current = config._settings
