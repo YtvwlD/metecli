@@ -1,6 +1,7 @@
 import yaml
 import os
 import sys
+from contextlib import suppress
 
 import logging
 log = logging.getLogger(__name__)
@@ -21,6 +22,10 @@ def setup_cmdline(global_subparsers):
     parser_get = subparsers.add_parser("get", help="retrieves a specific value")
     parser_get.add_argument("key", help="the key to search for")
     parser_get.set_defaults(func=get)
+    parser_set = subparsers.add_parser("set", help="sets a specific value")
+    parser_set.add_argument("key", help="the key to set")
+    parser_set.add_argument("value", help="the value to set")
+    parser_set.set_defaults(func=set)
     parser.set_defaults(func=display)
 
 def display(args, config):
@@ -33,6 +38,20 @@ def get(args, config):
         if part:
             current = current[part]
     print(current)
+
+def set(args, config):
+    path = args.key.split(".")
+    current = config._settings
+    for i in range(len(path)):
+        with suppress(IndexError):
+            if path[i] and path[i+1]:
+                current = current[path[i]]
+    if isinstance(current[path[-1]], dict):
+        print("The key you selected is no leaf. It can't be set to a value.")
+        return
+    current[path[-1]] = args.value
+    log.info("Set %s to '%s'.", args.key, args.value)
+    config.save()
 
 class Config():
     def __init__(self, path=None, name=None):
