@@ -6,6 +6,12 @@ import argparse
 import logging
 log = logging.getLogger(__name__)
 
+def setup_logging(log_level):
+    numeric_log_level = getattr(logging, log_level.upper(), None)
+    if not numeric_log_level:
+        raise Exception("Invalid log level: {}".format(log_level))
+    logging.basicConfig(level=numeric_log_level)
+
 def do():
     parser = argparse.ArgumentParser(description="A command line interface to mete.")
     subparsers = parser.add_subparsers(help="commands")
@@ -14,16 +20,13 @@ def do():
     audits.setup_cmdline(subparsers)
     drinks.setup_cmdline(subparsers)
     config.setup_cmdline(subparsers)
-    parser.add_argument("--loglevel", type=str, help="{debug, info, *warning*, error, critical}", default="warning")
+    parser.add_argument("--log_level", type=str, help="{debug, info, warning, error, critical}")
     parser.add_argument("--configpath", type=str, help="the path where to place the config file(s)")
     parser.add_argument("--configname", type=str, help="the name of the config to use")
 
     args = parser.parse_args()
-    numeric_log_level = getattr(logging, args.loglevel.upper(), None)
-    if not numeric_log_level:
-        print("Invalid log level.")
-        return
-    logging.basicConfig(level=numeric_log_level)
+    if args.log_level:
+        setup_logging(args.log_level)
     
     log.debug("Parsed args: %s", args)
     if(not hasattr(args, "func")):
@@ -31,5 +34,9 @@ def do():
         return
     
     conf = config.Config(path=args.configpath, name=args.configname)
+    
+    if not args.log_level:
+        setup_logging(conf["display"]["log_level"])
+    
     test_terminal_utf8()
     args.func(args, conf)

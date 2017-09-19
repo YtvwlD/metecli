@@ -7,10 +7,11 @@ import logging
 log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
-    "version": 1,
+    "version": 2,
     "connection": {},
     "display": {
         "table_format": "grid",
+        "log_level": "warning",
     }
 }
 
@@ -145,6 +146,11 @@ class Config():
         if "version" not in self: # v0 -> v1
             log.info("Configuration doesn't have a version. Asssuming v1.")
             self["version"] = 1
+            self.save()
+        if self["version"] == 1: # v1 -> v2
+            log.info("Migrating to v2: Adding display.log_level.")
+            self["display"]["log_level"] = "warning"
+            self["version"] = 2
             self.save()
     
     def save(self):
