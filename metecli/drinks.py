@@ -132,7 +132,7 @@ def barcodes_add(args, config, conn, drink):
 @with_drink
 def barcodes_delete(args, config, conn, drink):
     barcodes = _get_barcodes_for_drink(conn, drink)
-    if not args.barcode in list(barcodes):
+    if args.barcode not in list(barcodes):
         print("This barcode doesn't exist for this drink.")
         return
     conn.delete_barcode(args.barcode)
