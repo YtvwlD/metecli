@@ -10,7 +10,7 @@ def valid_date(value): # taken from https://stackoverflow.com/a/25470943/2192464
     try:
         return datetime.strptime(value, "%Y-%m-%d")
     except ValueError:
-        msg = "Not a valid date: '{}'.".format(value)
+        msg = "Not a valid date: '{}' (needs to be yyyy-mm-dd).".format(value)
         raise ArgumentTypeError(msg)
 
 def setup_cmdline(global_subparsers):
