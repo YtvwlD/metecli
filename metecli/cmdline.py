@@ -21,8 +21,8 @@ def do():
     drinks.setup_cmdline(subparsers)
     config.setup_cmdline(subparsers)
     parser.add_argument("--log_level", type=str, help="{debug, info, warning, error, critical}")
-    parser.add_argument("--configpath", type=str, help="the path where to place the config file(s)")
-    parser.add_argument("--configname", type=str, help="the name of the config to use")
+    parser.add_argument("--config_path", type=str, help="the path where to place the config file(s)")
+    parser.add_argument("--config_name", type=str, help="the name of the config to use")
 
     args = parser.parse_args()
     if args.log_level:
@@ -33,7 +33,7 @@ def do():
         print("You must provide a topic. Please see --help.")
         return
     
-    conf = config.Config(path=args.configpath, name=args.configname)
+    conf = config.Config(path=args.config_path, name=args.config_name)
     
     if not args.log_level:
         setup_logging(conf["display"]["log_level"])
