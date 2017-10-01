@@ -11,6 +11,7 @@ class Connection():
     def users(self):
         """Lists all users."""
         r = requests.get(urljoin(self._base_url, "/users.json"))
+        assert r.ok
         return r.json()
     
     def audits(self, user=None, from_date=None, to_date=None):
@@ -28,11 +29,13 @@ class Connection():
             params["end_date[month]"] = to_date.month
             params["end_date[day]"] = to_date.day
         r = requests.get(urljoin(self._base_url, "/audits.json"), params=params)
+        assert r.ok
         return r.json()
     
     def get_user(self, uid):
         """Get information about a user."""
         r = requests.get(urljoin(self._base_url, "/users/{}.json".format(uid)))
+        assert r.ok
         return r.json()
     
     def modify_user(self, user):
@@ -47,11 +50,13 @@ class Connection():
     def get_user_defaults(self):
         """Gets the default settings for creating a new user."""
         r = requests.get(urljoin(self._base_url, "/users/new.json"))
+        assert r.ok
         return r.json()
     
     def add_user(self, user):
         """Creates a new user."""
         r = requests.post(urljoin(self._base_url, "/users.json"), json=user)
+        assert r.ok
         return r.json()
     
     def buy(self, uid, did):
@@ -74,6 +79,7 @@ class Connection():
     def drinks(self):
         """Lists all drinks."""
         r = requests.get(urljoin(self._base_url, "/drinks.json"))
+        assert r.ok
         return r.json()
     
     def modify_drink(self, drink):
@@ -84,11 +90,13 @@ class Connection():
     def get_drink_defaults(self):
         """Gets the default settings for creating a new drink."""
         r = requests.get(urljoin(self._base_url, "/drinks/new.json"))
+        assert r.ok
         return r.json()
     
     def create_drink(self, drink):
         """Creates a new drink."""
         r = requests.post(urljoin(self._base_url, "/drinks.json"), json=drink)
+        assert r.ok
         return r.json()
     
     def delete_drink(self, drink_id):
@@ -104,6 +112,7 @@ class Connection():
     def get_barcode_defaults(self):
         """Get the defaults for creating new barcodes."""
         r = requests.get(urljoin(self._base_url, "/barcodes/new.json"))
+        assert r.ok
         return r.json()
     
     def create_barcode(self, barcode):
