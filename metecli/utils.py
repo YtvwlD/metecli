@@ -1,16 +1,8 @@
-from .connection import Connection
-
 from tabulate import tabulate
 
 import logging
 
 log = logging.getLogger(__name__)
-
-def with_connection(func):
-    def new_func(args, config):
-        conn = Connection(config=config)
-        return func(args, config, conn)
-    return new_func
 
 def print_table(config, data, headers=tuple()):
     print(tabulate(

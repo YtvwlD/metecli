@@ -1,4 +1,5 @@
-from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, with_connection, yn
+from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn
+from .connection import Connection
 
 import logging
 log = logging.getLogger(__name__)
@@ -34,8 +35,8 @@ def setup_cmdline(global_subparsers):
     parser_delete.set_defaults(func=delete)
     parser.set_defaults(func=list_drinks)
 
-@with_connection
-def list_drinks(args, config, conn):
+def list_drinks(args, config):
+    conn = Connection(config=config)
     drinks = conn.drinks()
     print("All drinks:")
     print_table(config,
@@ -58,14 +59,14 @@ def list_drinks(args, config, conn):
     )
 
 def with_drink(func):
-    def new_func(args, config, conn):
+    def new_func(args, config):
+        conn = Connection(config=config)
         drink = fuzzy_search(conn.drinks(), args.drink)
         if not drink:
             return
         return func(args, config, conn, drink)
     return new_func
 
-@with_connection
 @with_drink
 def show(args, config, conn, drink):
     print_drink(drink, config)
@@ -87,8 +88,8 @@ def edit_drink(data):
     show_edit(data, "caffeine", "caffeine", int)
     show_edit(data, "active", "active?", bool)
 
-@with_connection
-def add_drink(args, config, conn):
+def add_drink(args, config):
+    conn = Connection(config=config)
     data = conn.get_drink_defaults()
     log.debug("Creating a new drink. Default data: %s", data)
     edit_drink(data)
@@ -96,7 +97,6 @@ def add_drink(args, config, conn):
     data = conn.create_drink(data)
     log.info("Created a new drink. Data: %s", data)
 
-@with_connection
 @with_drink
 def modify(args, config, conn, data):
     log.debug("Editing drink. Old data: %s", data)
@@ -112,13 +112,11 @@ def _get_barcodes_for_drink(conn, drink):
             log.debug("Found barcode: %s", barcode["id"])
             yield barcode["id"]
 
-@with_connection
 @with_drink
 def barcodes_list(args, config, conn, drink):
     barcodes = _get_barcodes_for_drink(conn, drink)
     print_table(config, [[barcode] for barcode in barcodes])
 
-@with_connection
 @with_drink
 def barcodes_add(args, config, conn, drink):
     barcode = conn.get_barcode_defaults()
@@ -128,7 +126,6 @@ def barcodes_add(args, config, conn, drink):
     barcode = conn.create_barcode(barcode)
     log.info("Created new barcode '%s' for drink '%s'.", barcode["id"], drink["name"])
 
-@with_connection
 @with_drink
 def barcodes_delete(args, config, conn, drink):
     barcodes = _get_barcodes_for_drink(conn, drink)
@@ -138,7 +135,6 @@ def barcodes_delete(args, config, conn, drink):
     conn.delete_barcode(args.barcode)
     log.info("Deleted barcode '%s'.", args.barcode)
 
-@with_connection
 @with_drink
 def delete(args, config, conn, drink):
     if not args.force:

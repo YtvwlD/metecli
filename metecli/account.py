@@ -1,6 +1,6 @@
 from .connection import Connection
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, with_connection, yn
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn
 
 import logging
 log = logging.getLogger(__name__)
@@ -44,8 +44,8 @@ def edit_user(data):
     show_edit(data, "audit", "log transactions?", bool)
     show_edit(data, "redirect", "redirect after buying something?", bool)
 
-@with_connection
-def create(args, config, conn):
+def create(args, config):
+    conn = Connection(config=config)
     data = conn.get_user_defaults()
     log.debug("Creating new user. Default data: %s", data)
     edit_user(data)
@@ -75,8 +75,8 @@ def get_uid(conn):
         else:
             print("No matching account found. Please try again.")
 
-@with_connection
-def select(args, config, conn):
+def select(args, config):
+    conn = Connection(config=config)
     uid = get_uid(conn)
     config["connection"]["uid"] = uid
     config.save()

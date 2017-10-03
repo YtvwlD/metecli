@@ -1,4 +1,5 @@
-from .utils import fuzzy_search, find_by_id, print_table, with_connection
+from .utils import fuzzy_search, find_by_id, print_table
+from .connection import Connection
 
 from datetime import datetime
 from argparse import ArgumentTypeError
@@ -20,8 +21,8 @@ def setup_cmdline(global_subparsers):
     parser.add_argument("--to_date", type=valid_date, help="show only audits that were created before this date")
     parser.set_defaults(func=do)
 
-@with_connection
-def do(args, config, conn):
+def do(args, config):
+    conn = Connection(config=config)
     show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
 
 def _create_table(audits, drinks):
