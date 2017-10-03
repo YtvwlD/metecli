@@ -18,7 +18,7 @@ def get_url():
                 continue
             log.warning("Using HTTP. The connection won't be secure.")
         if not Connection(None, base_url=given).try_connect():
-            print("Couln't connect to the server. Please try again.")
+            print("Couldn't connect to the server. Please try again.")
             continue
         return given
 
