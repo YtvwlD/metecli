@@ -106,7 +106,6 @@ def modify(args, config, conn, data):
 
 def _get_barcodes_for_drink(conn, drink):
     all_barcodes = conn.barcodes()
-    barcodes = list()
     for barcode in all_barcodes:
         if barcode["drink"] == drink["id"]:
             log.debug("Found barcode: %s", barcode["id"])
