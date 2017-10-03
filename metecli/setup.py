@@ -17,7 +17,7 @@ def get_url():
             if yn("The URL you entered doesn't use HTTPS. Do you want to try again?"):
                 continue
             log.warning("Using HTTP. The connection won't be secure.")
-        if not Connection(base_url=given).try_connect():
+        if not Connection(None, base_url=given).try_connect():
             print("Couln't connect to the server. Please try again.")
             continue
         return given

@@ -36,7 +36,7 @@ def setup_cmdline(global_subparsers):
     parser.set_defaults(func=list_drinks)
 
 def list_drinks(args, config):
-    conn = Connection(config=config)
+    conn = Connection(config)
     drinks = conn.drinks()
     print("All drinks:")
     print_table(config,
@@ -60,7 +60,7 @@ def list_drinks(args, config):
 
 def with_drink(func):
     def new_func(args, config):
-        conn = Connection(config=config)
+        conn = Connection(config)
         drink = fuzzy_search(conn.drinks(), args.drink)
         if not drink:
             return
@@ -89,7 +89,7 @@ def edit_drink(data):
     show_edit(data, "active", "active?", bool)
 
 def add_drink(args, config):
-    conn = Connection(config=config)
+    conn = Connection(config)
     data = conn.get_drink_defaults()
     log.debug("Creating a new drink. Default data: %s", data)
     edit_drink(data)

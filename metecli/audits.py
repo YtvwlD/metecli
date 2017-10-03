@@ -22,7 +22,7 @@ def setup_cmdline(global_subparsers):
     parser.set_defaults(func=do)
 
 def do(args, config):
-    conn = Connection(config=config)
+    conn = Connection(config)
     show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
 
 def _create_table(audits, drinks):

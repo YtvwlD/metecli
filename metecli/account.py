@@ -45,7 +45,7 @@ def edit_user(data):
     show_edit(data, "redirect", "redirect after buying something?", bool)
 
 def create(args, config):
-    conn = Connection(config=config)
+    conn = Connection(config)
     data = conn.get_user_defaults()
     log.debug("Creating new user. Default data: %s", data)
     edit_user(data)
@@ -76,7 +76,7 @@ def get_uid(conn):
             print("No matching account found. Please try again.")
 
 def select(args, config):
-    conn = Connection(config=config)
+    conn = Connection(config)
     uid = get_uid(conn)
     config["connection"]["uid"] = uid
     config.save()
@@ -85,7 +85,7 @@ def select(args, config):
 class Account():
     def __init__(self, config):
         self._conf = config
-        self._conn = Connection(config=config)
+        self._conn = Connection(config)
         if not self._conf["connection"]["uid"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
