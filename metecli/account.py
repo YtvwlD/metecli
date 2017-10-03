@@ -85,11 +85,11 @@ def select(args, config, conn):
 class Account():
     def __init__(self, config):
         self._conf = config
-        if "base_url" not in self._conf["connection"]:
+        if not self._conf["connection"]["base_url"]:
             raise Exception("Connection is not configured yet. Account management isn't possible.")
         else:
             self._conn = Connection(base_url=config["connection"]["base_url"])
-        if "uid" not in self._conf["connection"]:
+        if not self._conf["connection"]["uid"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
             self._uid = self._conf["connection"]["uid"]
@@ -175,8 +175,8 @@ class Account():
             if not yn("Are you really sure about this?"):
                 log.debug("Deletion cancelled.")
                 return
-        del self._conf["connection"]["uid"]
-        del self._uid
-        self._conf.save()
         self._conn.delete_user(user["id"])
+        self._conf["connection"]["uid"] = None
+        self._conf.save()
+        self._uid = None
         log.info("Deleted account '%s'.", user["name"])

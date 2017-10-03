@@ -7,8 +7,11 @@ import logging
 log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
-    "version": 2,
-    "connection": {},
+    "version": 3,
+    "connection": {
+        "base_url": None,
+        "uid": None,
+    },
     "display": {
         "table_format": "grid",
         "log_level": "warning",
@@ -76,12 +79,6 @@ class Config():
     def __setitem__(self, key, value):
         self._settings[key] = value
     
-    def __delitem__(self, key):
-        del self._settings[key]
-    
-    def __contains__(self, key):
-        return key in self._settings
-    
     def __repr__(self):
         return repr(self._settings)
     
@@ -143,7 +140,7 @@ class Config():
             self.save()
     
     def _migrate(self):
-        if "version" not in self: # v0 -> v1
+        if "version" not in self._settings: # v0 -> v1
             log.info("Configuration doesn't have a version. Asssuming v1.")
             self["version"] = 1
             self.save()
@@ -151,6 +148,14 @@ class Config():
             log.info("Migrating to v2: Adding display.log_level.")
             self["display"]["log_level"] = "warning"
             self["version"] = 2
+            self.save()
+        if self["version"] == 2: # v2 -> v3
+            log.info("Migrating to v3: Adding 'uid' and 'base_url' to connection if they don't exist.")
+            if "base_url" not in self["connection"]:
+                self["connection"]["base_url"] = None
+            if "uid" not in self["connection"]:
+                self["connection"]["uid"] = None
+            self["version"] = 3
             self.save()
     
     def save(self):
