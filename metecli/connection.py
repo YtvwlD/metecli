@@ -7,6 +7,8 @@ log = logging.getLogger(__name__)
 class Connection():
     def __init__(self, config=None, base_url=None):
         if config and not base_url:
+            if not config["connection"]["base_url"]:
+                raise Exception("The connection is not configured yet.")
             self._base_url = config["connection"]["base_url"]
         elif base_url and not config:
             self._base_url = base_url

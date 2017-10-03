@@ -85,10 +85,7 @@ def select(args, config, conn):
 class Account():
     def __init__(self, config):
         self._conf = config
-        if not self._conf["connection"]["base_url"]:
-            raise Exception("Connection is not configured yet. Account management isn't possible.")
-        else:
-            self._conn = Connection(config=config)
+        self._conn = Connection(config=config)
         if not self._conf["connection"]["uid"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:

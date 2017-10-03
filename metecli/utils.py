@@ -8,8 +8,6 @@ log = logging.getLogger(__name__)
 
 def with_connection(func):
     def new_func(args, config):
-        if not config["connection"]["base_url"]:
-            raise Exception("The connection is not configured, yet.")
         conn = Connection(config=config)
         return func(args, config, conn)
     return new_func
