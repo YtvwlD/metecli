@@ -1,3 +1,5 @@
+from .connection import Connection
+
 import yaml
 import os
 import sys
@@ -7,9 +9,10 @@ import logging
 log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
-    "version": 3,
+    "version": 4,
     "connection": {
         "base_url": None,
+        "api_version": None,
         "uid": None,
     },
     "display": {
@@ -156,6 +159,14 @@ class Config():
             if "uid" not in self["connection"]:
                 self["connection"]["uid"] = None
             self["version"] = 3
+            self.save()
+        if self["version"] == 3: # v3 -> v4
+            log.info("Migrating to v4: Adding connection.api_version.")
+            if self["connection"]["base_url"]:
+                self["connection"]["api_version"] = Connection(None, base_url=self["connection"]["base_url"]).determine_api_version()
+            else:
+                self["connection"]["api_version"] = None
+            self["version"] = 4
             self.save()
     
     def save(self):

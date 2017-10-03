@@ -10,6 +10,10 @@ class Connection():
             if not config["connection"]["base_url"]:
                 raise Exception("The connection is not configured yet.")
             self._base_url = config["connection"]["base_url"]
+            if not config["connection"]["api_version"]:
+                raise Exception("The configured connection doesn't have api_version set.")
+            self._api_version = config["connection"]["api_version"]
+            assert self._api_version in ("legacy", "v1")
         elif base_url and not config:
             self._base_url = base_url
         else:
@@ -142,4 +146,11 @@ class Connection():
         except Exception as exc:
             log.error("%s: %s", type(exc), exc)
             return False
+    
+    def determine_api_version(self):
+        """Tries to determine the API version."""
+        if "api/v1" in self._base_url:
+            return "v1"
+        else:
+            return "legacy"
         
