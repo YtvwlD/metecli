@@ -5,8 +5,13 @@ import logging
 log = logging.getLogger(__name__)
 
 class Connection():
-    def __init__(self, base_url=None):
-        self._base_url = base_url
+    def __init__(self, config=None, base_url=None):
+        if config and not base_url:
+            self._base_url = config["connection"]["base_url"]
+        elif base_url and not config:
+            self._base_url = base_url
+        else:
+            raise Exception("Either config *or* base_url must be provided.")
         self._sess = Session()
     
     def users(self):
