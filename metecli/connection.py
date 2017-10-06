@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 class Connection():
     def __init__(self, config, base_url=None):
         if config and not base_url:
+            self._conf = config
             if not config["connection"]["base_url"]:
                 raise Exception("The connection is not configured yet.")
             self._base_url = config["connection"]["base_url"]
@@ -15,6 +16,7 @@ class Connection():
             self._api_version = config["connection"]["api_version"]
             assert self._api_version in ("legacy", "v1")
         elif base_url and not config:
+            self._conf = None
             self._base_url = base_url
             self._api_version = self.determine_api_version()
         else:
