@@ -16,6 +16,7 @@ class Connection():
             assert self._api_version in ("legacy", "v1")
         elif base_url and not config:
             self._base_url = base_url
+            self._api_version = self.determine_api_version()
         else:
             raise Exception("Either config *or* base_url must be provided.")
         self._sess = Session()
