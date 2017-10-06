@@ -6,6 +6,7 @@ log = logging.getLogger(__name__)
 
 class Connection():
     def __init__(self, config, base_url=None):
+        self._sess = Session()
         if config and not base_url:
             self._conf = config
             if not config["connection"]["base_url"]:
@@ -21,7 +22,6 @@ class Connection():
             self._api_version = self.determine_api_version()
         else:
             raise Exception("Either config *or* base_url must be provided.")
-        self._sess = Session()
     
     def users(self):
         """Lists all users."""
