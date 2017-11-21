@@ -148,7 +148,7 @@ class Connection():
             self.users()
             return True
         except Exception as exc:
-            log.error("%s: %s", type(exc), exc)
+            log.error("%s: %s", type(exc).__name__, exc)
             return False
     
     def determine_api_version(self):
