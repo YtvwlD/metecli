@@ -27,7 +27,7 @@ class Connection():
     def users(self):
         """Lists all users."""
         r = self._sess.get(urljoin(self._base_url, "users.json"))
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def audits(self, user=None, from_date=None, to_date=None):
@@ -45,80 +45,80 @@ class Connection():
             params["end_date[month]"] = to_date.month
             params["end_date[day]"] = to_date.day
         r = self._sess.get(urljoin(self._base_url, "audits.json"), params=params)
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def get_user(self, uid):
         """Get information about a user."""
         r = self._sess.get(urljoin(self._base_url, "users/{}.json".format(uid)))
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def modify_user(self, user):
         """Modifys an existing user."""
         r = self._sess.patch(urljoin(self._base_url, "users/{}.json").format(user["id"]), json=user)
-        assert r.ok
+        r.raise_for_status()
     
     def delete_user(self, uid):
         r = self._sess.delete(urljoin(self._base_url, "users/{}.json".format(uid)))
-        assert r.ok
+        r.raise_for_status()
     
     def get_user_defaults(self):
         """Gets the default settings for creating a new user."""
         r = self._sess.get(urljoin(self._base_url, "users/new.json"))
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def add_user(self, user):
         """Creates a new user."""
         r = self._sess.post(urljoin(self._base_url, "users.json"), json=user)
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def buy(self, uid, did):
         """Buy a drink."""
         r = self._sess.get(urljoin(self._base_url, "users/{}/buy.json?drink={}".format(uid, did)))
-        assert r.ok
+        r.raise_for_status()
     
     def pay(self, uid, amount):
         """Pay an amount."""
         r = self._sess.get(urljoin(self._base_url, "users/{}/payment.json?amount={}".format(uid, amount)))
         print(r.text)
-        assert r.ok
+        r.raise_for_status()
     
     def deposit(self, uid, amount):
         """Deposit money."""
         r = self._sess.get(urljoin(self._base_url, "users/{}/deposit.json?amount={}".format(uid, amount)))
         print(r.text)
-        assert r.ok
+        r.raise_for_status()
     
     def drinks(self):
         """Lists all drinks."""
         r = self._sess.get(urljoin(self._base_url, "drinks.json"))
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def modify_drink(self, drink):
         """Modifys an existing drink."""
         r = self._sess.patch(urljoin(self._base_url, "drinks/{}.json").format(drink["id"]), json=drink)
-        assert r.ok
+        r.raise_for_status()
     
     def get_drink_defaults(self):
         """Gets the default settings for creating a new drink."""
         r = self._sess.get(urljoin(self._base_url, "drinks/new.json"))
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def create_drink(self, drink):
         """Creates a new drink."""
         r = self._sess.post(urljoin(self._base_url, "drinks.json"), json=drink)
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def delete_drink(self, drink_id):
         """Deletes an existing drink."""
         r = self._sess.delete(urljoin(self._base_url, "drinks/{}.json").format(drink_id))
-        assert r.ok
+        r.raise_for_status()
     
     def barcodes(self):
         """Lists all barcodes."""
@@ -128,19 +128,19 @@ class Connection():
     def get_barcode_defaults(self):
         """Get the defaults for creating new barcodes."""
         r = self._sess.get(urljoin(self._base_url, "barcodes/new.json"))
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def create_barcode(self, barcode):
         """Creates a new barcode."""
         r = self._sess.post(urljoin(self._base_url, "barcodes.json"), json=barcode)
-        assert r.ok
+        r.raise_for_status()
         return r.json()
     
     def delete_barcode(self, barcode_id):
         """Delete a barcode."""
         r = self._sess.delete(urljoin(self._base_url, "barcodes/{}.json").format(barcode_id))
-        assert r.ok
+        r.raise_for_status()
     
     def try_connect(self):
         """Tries to connect to the server."""
