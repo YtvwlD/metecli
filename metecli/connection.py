@@ -181,6 +181,6 @@ class Connection():
                 self._base_url = old_base_url
         if changed and self._conf:
             # save the new values
-            self._conf["connection"]["api_version"] == self._api_version
-            self._conf["connection"]["base_url"] == self._base_url
+            self._conf["connection"]["api_version"] = self._api_version
+            self._conf["connection"]["base_url"] = self._base_url
             self._conf.save()
