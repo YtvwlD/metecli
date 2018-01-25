@@ -123,8 +123,8 @@ class Account():
     def buy(self, args):
         drink_found = fuzzy_search(self._conn.drinks(), args.drink)
         if drink_found:
-            log.info("Buying %s...", drink_found["name"])
-            self._conn.buy(self._uid, drink_found["id"])
+            self._buy(drink_found)
+
     
     def buy_barcode(self, args):
         barcodes = self._conn.barcodes()
@@ -137,8 +137,18 @@ class Account():
         if not drink:
             print("Couldn't find a drink with this barcode.")
             return
+        self._buy(drink)
+    
+    def _buy(self, drink):
         log.info("Buying %s...", drink["name"])
         self._conn.buy(self._uid, drink["id"])
+        data = self._conn.get_user(self._uid)
+        balance = float(data["balance"])
+        log.info("Success! You bought {} and your new balance is {}.".format(drink["name"], balance))
+        if balance < 0:
+            log.warn("Your balance is below zero. Remember to compensate as soon as possible.")
+        if data["audit"]:
+            log.info("This transaction has been logged, because you set up your account that way.")
     
     def pay(self, args):
         log.info("Paying %f...", args.amount)
