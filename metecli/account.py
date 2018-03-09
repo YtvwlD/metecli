@@ -31,6 +31,10 @@ def setup_cmdline(global_subparsers):
     parser_deposit = subparsers.add_parser("deposit", help="add an amount to your balance")
     parser_deposit.add_argument("amount", type=float, help="the amount to add")
     parser_deposit.set_defaults(func=lambda args, config: Account(config).deposit(args))
+    parser_transfer = subparsers.add_parser("transfer", help="transfer an amount to a different account")
+    parser_transfer.add_argument("receiver", type=str, help="the receiving user")
+    parser_transfer.add_argument("amount", type=float, help="the amount to transfer")
+    parser_transfer.set_defaults(func=lambda args, config: Account(config).transfer(args))
     parser_logs = subparsers.add_parser("logs", help="display the logs")
     parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
     parser.set_defaults(func=lambda args, config: Account(config).show(args))
@@ -157,6 +161,14 @@ class Account():
     def deposit(self, args):
         log.info("Depositing %f...", args.amount)
         self._conn.deposit(self._uid, args.amount)
+    
+    def transfer(self, args):
+        receiver_found = fuzzy_search(self._conn.users(), args.receiver)
+        if not receiver_found:
+            print("Couldn't find a receiver with this name.")
+            return
+        log.info("Transferring %f to %s...", args.amount, receiver_found["name"])
+        self._conn.transfer(self._uid, receiver_found["id"], args.amount)
     
     def delete(self, args):
         user = self._conn.get_user(self._uid)

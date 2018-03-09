@@ -92,6 +92,12 @@ class Connection():
         print(r.text)
         r.raise_for_status()
     
+    def transfer(self, sender, receiver, amount):
+        """Transfer money."""
+        log.warning("This feature isn't really supported by the server. Use it with caution.")
+        self.pay(sender, amount)
+        self.deposit(receiver, amount)
+    
     def drinks(self):
         """Lists all drinks."""
         r = self._sess.get(urljoin(self._base_url, "drinks.json"))
