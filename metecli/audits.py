@@ -1,31 +1,32 @@
 from .utils import fuzzy_search, find_by_id, print_table
+from .config import Config
 from .connection import Connection
 
 from datetime import datetime
-from argparse import ArgumentTypeError
+import argparse
 
 import logging
 log = logging.getLogger(__name__)
 
-def valid_date(value): # taken from https://stackoverflow.com/a/25470943/2192464
+def valid_date(value: str) -> datetime: # taken from https://stackoverflow.com/a/25470943/2192464
     try:
         return datetime.strptime(value, "%Y-%m-%d")
     except ValueError:
         msg = "Not a valid date: '{}' (needs to be yyyy-mm-dd).".format(value)
-        raise ArgumentTypeError(msg)
+        raise argparse.ArgumentTypeError(msg)
 
-def setup_cmdline(global_subparsers):
+def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("audits", help="show audits")
     parser.add_argument("--user", type=str, help="show only audits for the user USER")
     parser.add_argument("--from_date", type=valid_date, help="show only audits that were created after this date")
     parser.add_argument("--to_date", type=valid_date, help="show only audits that were created before this date")
     parser.set_defaults(func=do)
 
-def do(args, config):
+def do(args: argparse.Namespace, config: Config) -> None:
     conn = Connection(config)
     show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
 
-def _create_table(audits, drinks):
+def _create_table(audits: list, drinks: list):
     for audit in audits["audits"]:
         drink = None
         if audit["drink"]:
@@ -34,7 +35,7 @@ def _create_table(audits, drinks):
             drink = {"name": "n/a"}
         yield [audit["created_at"], drink["name"], audit["difference"]]
 
-def show(config, conn, user=None, from_date=None, to_date=None):
+def show(config: Config, conn: Connection, user=None, from_date=None, to_date=None) -> None:
     params = dict()
     if user:
         user_found = fuzzy_search(conn.users(), user)
