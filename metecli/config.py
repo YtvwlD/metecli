@@ -1,3 +1,4 @@
+from .config import Config
 from .connection import Connection
 
 import yaml
@@ -5,6 +6,7 @@ import os
 import sys
 from contextlib import suppress
 
+import argparse
 import logging
 log = logging.getLogger(__name__)
 
@@ -21,7 +23,7 @@ DEFAULT_SETTINGS = {
     }
 }
 
-def setup_cmdline(global_subparsers):
+def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("config", help="modify the configuration")
     subparsers = parser.add_subparsers(help="action")
     parser_display = subparsers.add_parser("display", help="displays the current config")
@@ -35,19 +37,19 @@ def setup_cmdline(global_subparsers):
     parser_set.set_defaults(func=set)
     parser.set_defaults(func=display)
 
-def display(args, config):
+def display(args: argparse.Namespace, config: Config) -> None:
     print(yaml.safe_dump(config._settings, default_flow_style=False))
 
 def handle_KeyError(func):
-    def new_func(args, config):
+    def new_func(args: argparse.Namespace, config: Config) -> None:
         try:
-            return func(args, config)
+            func(args, config)
         except KeyError:
             print("This configuration key doesn't exist.")
     return new_func
 
 @handle_KeyError
-def get(args, config):
+def get(args: argparse.Namespace, config: Config) -> None:
     path = args.key.split(".")
     current = config
     for part in path:
@@ -56,7 +58,7 @@ def get(args, config):
     print(current)
 
 @handle_KeyError
-def set(args, config):
+def set(args: argparse.Namespace, config: Config) -> None:
     path = args.key.split(".")
     current = config._settings
     for i in range(len(path)):
@@ -71,21 +73,21 @@ def set(args, config):
     config.save()
 
 class Config():
-    def __init__(self, path=None, name=None):
+    def __init__(self, path=None, name=None) -> None:
         self._search_config_file_path(path, name)
         self._open_or_create()
         self._migrate()
     
-    def __getitem__(self, key):
+    def __getitem__(self, key: str):
         return self._settings[key]
     
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value):
         self._settings[key] = value
     
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self._settings)
     
-    def _search_config_file_path(self, path, name):
+    def _search_config_file_path(self, path: str, name: str) -> None:
         if path:
             log.info("Config path was specified: %s", path)
             config_path = path
@@ -130,7 +132,7 @@ class Config():
         log.debug("Using config file at: %s", config_file_path)
         self.config_file_path = config_file_path
     
-    def _open_or_create(self):
+    def _open_or_create(self) -> None:
         if(os.path.exists(self.config_file_path)):
             log.debug("Config file does already exist. Opening.")
             with open(self.config_file_path, "rt") as config_file:
@@ -142,7 +144,7 @@ class Config():
             self._settings = dict(DEFAULT_SETTINGS)
             self.save()
     
-    def _migrate(self):
+    def _migrate(self) -> None:
         if "version" not in self._settings: # v0 -> v1
             log.info("Configuration doesn't have a version. Asssuming v1.")
             self["version"] = 1
@@ -169,7 +171,7 @@ class Config():
             self["version"] = 4
             self.save()
     
-    def save(self):
+    def save(self) -> None:
         log.debug("Saving config....")
         with open(self.config_file_path, "wt") as config_file:
             yaml.safe_dump(self._settings, stream=config_file, default_flow_style=False)
