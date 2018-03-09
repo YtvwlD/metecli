@@ -83,13 +83,11 @@ class Connection():
     def pay(self, uid, amount):
         """Pay an amount."""
         r = self._sess.get(urljoin(self._base_url, "users/{}/payment.json?amount={}".format(uid, amount)))
-        print(r.text)
         r.raise_for_status()
     
     def deposit(self, uid, amount):
         """Deposit money."""
         r = self._sess.get(urljoin(self._base_url, "users/{}/deposit.json?amount={}".format(uid, amount)))
-        print(r.text)
         r.raise_for_status()
     
     def transfer(self, sender, receiver, amount):
