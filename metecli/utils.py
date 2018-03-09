@@ -1,17 +1,19 @@
+from .config import Config
+
 from tabulate import tabulate
 
 import logging
 
 log = logging.getLogger(__name__)
 
-def print_table(config, data, headers=tuple()):
+def print_table(config: Config, data: dict, headers: tuple = tuple()) -> None:
     print(tabulate(
         data,
         headers=headers,
         tablefmt=config["display"]["table_format"],
     ))
 
-def fuzzy_search(things, search_for):
+def fuzzy_search(things: list, search_for: str) -> object:
     possible_things = list()
     selected_thing = None
     if search_for.isdecimal():
@@ -37,7 +39,7 @@ def fuzzy_search(things, search_for):
         print("No match was found.")
         return None
 
-def find_by_id(things, id):
+def find_by_id(things: list, id: int) -> object:
     log.debug("Searching for %s in %s...", id, things)
     for thing in things:
         if thing["id"] == id:
@@ -46,30 +48,30 @@ def find_by_id(things, id):
     log.debug("No match.")
     return None
 
-def test_terminal_utf8():
+def test_terminal_utf8() -> None:
     """Produces a warning if the system isn't correctly configured to output UTF-8."""
     from sys import stdout
     if stdout.encoding != "UTF-8":
         log.warning("Your system doesn't seem support UTF-8. Please consider fixing this.")
 
-def true_false_to_yes_no(value):
+def true_false_to_yes_no(value: bool) -> str:
     return "yes" if value else "no"
 
-def yes_no_to_true_false(value):
+def yes_no_to_true_false(value: str) -> bool:
     if value in ("yes", "y"):
         return True
     if value in ("no", "n"):
         return False
     return None
 
-def yn(prompt):
+def yn(prompt: str) -> bool:
     while True:
         entered = yes_no_to_true_false(input("{} (y/n) ".format(prompt)))
         if entered is not None:
             return entered
         print("Please enter 'yes' or 'no'.")
 
-def show_edit(dict, key, prompt, type):
+def show_edit(dict: dict, key: str, prompt: str, type) -> None:
     old_value = dict[key]
     if type == bool:
         old_value = true_false_to_yes_no(old_value)
