@@ -1,11 +1,13 @@
+from .config import Config
 from .connection import Connection
 from . import audits
 from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn
 
+import argparse
 import logging
 log = logging.getLogger(__name__)
 
-def setup_cmdline(global_subparsers):
+def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("account", help="show or modify an account")
     subparsers = parser.add_subparsers(help="action")
     parser_create = subparsers.add_parser("create", help="creates a new account")
@@ -39,7 +41,7 @@ def setup_cmdline(global_subparsers):
     parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
     parser.set_defaults(func=lambda args, config: Account(config).show(args))
 
-def edit_user(data):
+def edit_user(data: dict) -> None:
     show_edit(data, "name", "name", str)
     show_edit(data, "email", "email", "email")
     show_edit(data, "balance", "account balance", float)
@@ -48,7 +50,7 @@ def edit_user(data):
     show_edit(data, "audit", "log transactions?", bool)
     show_edit(data, "redirect", "redirect after buying something?", bool)
 
-def create(args, config):
+def create(args: argparse.Namespace, config: Config) -> None:
     conn = Connection(config)
     data = conn.get_user_defaults()
     log.debug("Creating new user. Default data: %s", data)
@@ -57,7 +59,7 @@ def create(args, config):
     data = conn.add_user(data)
     log.info("Created new user. Data: %s", data)
 
-def get_uid(conn):
+def get_uid(conn: Connection) -> int:
     log.info("Loading all users...")
     users = conn.users()
     while True:
@@ -79,7 +81,7 @@ def get_uid(conn):
         else:
             print("No matching account found. Please try again.")
 
-def select(args, config):
+def select(args: argparse.Namespace, config: Config) -> None:
     conn = Connection(config)
     uid = get_uid(conn)
     config["connection"]["uid"] = uid
@@ -87,7 +89,7 @@ def select(args, config):
     log.info("UID %i configured.", uid)
 
 class Account():
-    def __init__(self, config):
+    def __init__(self, config: Config) -> None:
         self._conf = config
         self._conn = Connection(config)
         if not self._conf["connection"]["uid"]:
@@ -95,12 +97,12 @@ class Account():
         else:
             self._uid = self._conf["connection"]["uid"]
     
-    def show(self, args):
+    def show(self, args: argparse.Namespace) -> None:
         """Displays information about this user."""
         data = self._conn.get_user(self._uid)
         self._print_user(data)
     
-    def _print_user(self, data):
+    def _print_user(self, data: dict) -> None:
         table_data = [
             ["ID", data["id"]],
             ["name", data["name"]],
@@ -112,7 +114,7 @@ class Account():
         ]
         print_table(self._conf, table_data)
         
-    def modify(self, args):
+    def modify(self, args: argparse.Namespace) -> None:
         """Modify settings."""
         data = self._conn.get_user(self._uid)
         log.debug("Editing account. Old data: %s", data)
@@ -120,17 +122,17 @@ class Account():
         log.info("Editing account. New data: %s", data)
         self._conn.modify_user(data)
     
-    def logs(self, args):
+    def logs(self, args: argparse.Namespace) -> None:
         """The same as `audits --user <this user>`."""
         audits.show(self._conf, self._conn, user=str(self._uid))
     
-    def buy(self, args):
+    def buy(self, args: argparse.Namespace) -> None:
         drink_found = fuzzy_search(self._conn.drinks(), args.drink)
         if drink_found:
             self._buy(drink_found)
 
     
-    def buy_barcode(self, args):
+    def buy_barcode(self, args: argparse.Namespace) -> None:
         barcodes = self._conn.barcodes()
         drinks = self._conn.drinks()
         barcode = find_by_id(barcodes, args.barcode)
@@ -143,7 +145,7 @@ class Account():
             return
         self._buy(drink)
     
-    def _buy(self, drink):
+    def _buy(self, drink: dict) -> None:
         log.info("Buying %s...", drink["name"])
         self._conn.buy(self._uid, drink["id"])
         data = self._conn.get_user(self._uid)
@@ -154,15 +156,15 @@ class Account():
         if data["audit"]:
             log.info("This transaction has been logged, because you set up your account that way.")
     
-    def pay(self, args):
+    def pay(self, args: argparse.Namespace) -> None:
         log.info("Paying %f...", args.amount)
         self._conn.pay(self._uid, args.amount)
     
-    def deposit(self, args):
+    def deposit(self, args: argparse.Namespace) -> None:
         log.info("Depositing %f...", args.amount)
         self._conn.deposit(self._uid, args.amount)
     
-    def transfer(self, args):
+    def transfer(self, args: argparse.Namespace) -> None:
         receiver_found = fuzzy_search(self._conn.users(), args.receiver)
         if not receiver_found:
             print("Couldn't find a receiver with this name.")
@@ -170,7 +172,7 @@ class Account():
         log.info("Transferring %f to %s...", args.amount, receiver_found["name"])
         self._conn.transfer(self._uid, receiver_found["id"], args.amount)
     
-    def delete(self, args):
+    def delete(self, args: argparse.Namespace) -> None:
         user = self._conn.get_user(self._uid)
         if not args.force:
             log.debug("About to delete account '%s'.", user["name"])
