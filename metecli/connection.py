@@ -1,3 +1,5 @@
+from .config import Config
+
 from requests import Session
 from urllib.parse import urljoin
 
@@ -5,7 +7,7 @@ import logging
 log = logging.getLogger(__name__)
 
 class Connection():
-    def __init__(self, config, base_url=None):
+    def __init__(self, config: Config, base_url=None) -> None:
         self._sess = Session()
         if config and not base_url:
             self._conf = config
@@ -24,13 +26,13 @@ class Connection():
         else:
             raise Exception("Either config *or* base_url must be provided.")
     
-    def users(self):
+    def users(self) -> list:
         """Lists all users."""
         r = self._sess.get(urljoin(self._base_url, "users.json"))
         r.raise_for_status()
         return r.json()
     
-    def audits(self, user=None, from_date=None, to_date=None):
+    def audits(self, user=None, from_date=None, to_date=None) -> dict:
         """Get audits."""
         params = dict()
         if user:
@@ -48,105 +50,105 @@ class Connection():
         r.raise_for_status()
         return r.json()
     
-    def get_user(self, uid):
+    def get_user(self, uid: int) -> dict:
         """Get information about a user."""
         r = self._sess.get(urljoin(self._base_url, "users/{}.json".format(uid)))
         r.raise_for_status()
         return r.json()
     
-    def modify_user(self, user):
+    def modify_user(self, user: dict) -> None:
         """Modifys an existing user."""
         r = self._sess.patch(urljoin(self._base_url, "users/{}.json").format(user["id"]), json=user)
         r.raise_for_status()
     
-    def delete_user(self, uid):
+    def delete_user(self, uid: int) -> None:
         r = self._sess.delete(urljoin(self._base_url, "users/{}.json".format(uid)))
         r.raise_for_status()
     
-    def get_user_defaults(self):
+    def get_user_defaults(self) -> dict:
         """Gets the default settings for creating a new user."""
         r = self._sess.get(urljoin(self._base_url, "users/new.json"))
         r.raise_for_status()
         return r.json()
     
-    def add_user(self, user):
+    def add_user(self, user: dict) -> dict:
         """Creates a new user."""
         r = self._sess.post(urljoin(self._base_url, "users.json"), json=user)
         r.raise_for_status()
         return r.json()
     
-    def buy(self, uid, did):
+    def buy(self, uid: int, did: int) -> None:
         """Buy a drink."""
         r = self._sess.get(urljoin(self._base_url, "users/{}/buy.json?drink={}".format(uid, did)))
         r.raise_for_status()
     
-    def pay(self, uid, amount):
+    def pay(self, uid: int, amount: float) -> None:
         """Pay an amount."""
         r = self._sess.get(urljoin(self._base_url, "users/{}/payment.json?amount={}".format(uid, amount)))
         r.raise_for_status()
     
-    def deposit(self, uid, amount):
+    def deposit(self, uid: int, amount: float) -> None:
         """Deposit money."""
         r = self._sess.get(urljoin(self._base_url, "users/{}/deposit.json?amount={}".format(uid, amount)))
         r.raise_for_status()
     
-    def transfer(self, sender, receiver, amount):
+    def transfer(self, sender: int, receiver: int, amount: float) -> None:
         """Transfer money."""
         log.warning("This feature isn't really supported by the server. Use it with caution.")
         self.pay(sender, amount)
         self.deposit(receiver, amount)
     
-    def drinks(self):
+    def drinks(self) -> list:
         """Lists all drinks."""
         r = self._sess.get(urljoin(self._base_url, "drinks.json"))
         r.raise_for_status()
         return r.json()
     
-    def modify_drink(self, drink):
+    def modify_drink(self, drink: dict) -> None:
         """Modifys an existing drink."""
         r = self._sess.patch(urljoin(self._base_url, "drinks/{}.json").format(drink["id"]), json=drink)
         r.raise_for_status()
     
-    def get_drink_defaults(self):
+    def get_drink_defaults(self) -> dict:
         """Gets the default settings for creating a new drink."""
         r = self._sess.get(urljoin(self._base_url, "drinks/new.json"))
         r.raise_for_status()
         return r.json()
     
-    def create_drink(self, drink):
+    def create_drink(self, drink: dict) -> dict:
         """Creates a new drink."""
         r = self._sess.post(urljoin(self._base_url, "drinks.json"), json=drink)
         r.raise_for_status()
         return r.json()
     
-    def delete_drink(self, drink_id):
+    def delete_drink(self, drink_id: int) -> None:
         """Deletes an existing drink."""
         r = self._sess.delete(urljoin(self._base_url, "drinks/{}.json").format(drink_id))
         r.raise_for_status()
     
-    def barcodes(self):
+    def barcodes(self) -> list:
         """Lists all barcodes."""
         r = self._sess.get(urljoin(self._base_url, "barcodes.json"))
         return r.json()
     
-    def get_barcode_defaults(self):
+    def get_barcode_defaults(self) -> dict:
         """Get the defaults for creating new barcodes."""
         r = self._sess.get(urljoin(self._base_url, "barcodes/new.json"))
         r.raise_for_status()
         return r.json()
     
-    def create_barcode(self, barcode):
+    def create_barcode(self, barcode: dict) -> dict:
         """Creates a new barcode."""
         r = self._sess.post(urljoin(self._base_url, "barcodes.json"), json=barcode)
         r.raise_for_status()
         return r.json()
     
-    def delete_barcode(self, barcode_id):
+    def delete_barcode(self, barcode_id: int) -> None:
         """Delete a barcode."""
         r = self._sess.delete(urljoin(self._base_url, "barcodes/{}.json").format(barcode_id))
         r.raise_for_status()
     
-    def try_connect(self):
+    def try_connect(self) -> bool:
         """Tries to connect to the server."""
         try:
             self.users()
@@ -155,14 +157,14 @@ class Connection():
             log.error("%s: %s", type(exc).__name__, exc)
             return False
     
-    def determine_api_version(self):
+    def determine_api_version(self) -> str:
         """Tries to determine the API version."""
         if "api/v1" in self._base_url:
             return "v1"
         else:
             return "legacy"
     
-    def _try_upgrade(self):
+    def _try_upgrade(self) -> None:
         """Tries to upgrade the API version."""
         changed = False
         for upgrade in (("legacy", "v1"),): # What should be upgraded?
