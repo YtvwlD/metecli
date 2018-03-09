@@ -1,12 +1,14 @@
 from urllib.parse import urlparse
 from .connection import Connection
+from .config import Config
 from .utils import yn
 from . import account
 
+import argparse
 import logging
 log = logging.getLogger(__name__)
 
-def get_url():
+def get_url() -> tuple:
     while True:
         given = input("Please enter the url for mete: ")
         parsed = urlparse(given)
@@ -23,11 +25,11 @@ def get_url():
             continue
         return given, conn
 
-def setup_cmdline(global_subparsers):
+def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("setup", help="setup the connection and select an account")
     parser.set_defaults(func=do)
 
-def do(args, config):
+def do(args: argparse.Namespace, config: Config) -> None:
     log.info("Starting setup.")
     url, conn = get_url()
     config["connection"]["base_url"] = url
