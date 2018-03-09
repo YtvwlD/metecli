@@ -1,11 +1,11 @@
-def fail_on_python2():
+def fail_on_python2() -> None:
     """Exits if we are using Python 2."""
     import sys
     if sys.version_info.major == 2:
         print("You are still using Python 2. Please upgrade.")
         sys.exit(-1)
 
-def run():
+def run() -> None:
     fail_on_python2()
     from . import cmdline
     cmdline.do()
