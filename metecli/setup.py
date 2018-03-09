@@ -1,4 +1,5 @@
 from urllib.parse import urlparse
+from typing import Tuple
 from .connection import Connection
 from .config import Config
 from .utils import yn
@@ -8,7 +9,7 @@ import argparse
 import logging
 log = logging.getLogger(__name__)
 
-def get_url() -> tuple:
+def get_url() -> Tuple[str, Connection]:
     while True:
         given = input("Please enter the url for mete: ")
         parsed = urlparse(given)

@@ -1,8 +1,9 @@
-from .utils import fuzzy_search, find_by_id, print_table
+from .utils import fuzzy_search, find_by_id, print_table, Thing
 from .config import Config
 from .connection import Connection
 
 from datetime import datetime
+from typing import List, Tuple, Dict, Iterator, Optional
 import argparse
 
 import logging
@@ -26,16 +27,16 @@ def do(args: argparse.Namespace, config: Config) -> None:
     conn = Connection(config)
     show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
 
-def _create_table(audits: list, drinks: list):
+def _create_table(audits: Dict[str, object], drinks: List[Thing]) -> Iterator[Tuple[datetime, str, float]]:
     for audit in audits["audits"]:
         drink = None
         if audit["drink"]:
             drink = find_by_id(drinks, audit["drink"])
         if not drink:
             drink = {"name": "n/a"}
-        yield [audit["created_at"], drink["name"], audit["difference"]]
+        yield (audit["created_at"], drink["name"], audit["difference"])
 
-def show(config: Config, conn: Connection, user=None, from_date=None, to_date=None) -> None:
+def show(config: Config, conn: Connection, user: Optional[str] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> None:
     params = dict()
     if user:
         user_found = fuzzy_search(conn.users(), user)
@@ -55,4 +56,4 @@ def show(config: Config, conn: Connection, user=None, from_date=None, to_date=No
     if user:
         print(" for user {}".format(user), end="")
     print(":")
-    print_table(config, _create_table(audits, drinks), headers=["time", "drink", "difference"])
+    print_table(config, _create_table(audits, drinks), headers=("time", "drink", "difference"))

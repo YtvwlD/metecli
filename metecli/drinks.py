@@ -1,7 +1,8 @@
-from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn
+from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn, Thing
 from .config import Config
 from .connection import Connection
 
+from typing import Callable, Iterator
 import argparse
 import logging
 log = logging.getLogger(__name__)
@@ -50,17 +51,17 @@ def list_drinks(args: argparse.Namespace, config: Config) -> None:
             "{:.2f} €".format(float(drink["price"])),
             true_false_to_yes_no(drink["active"]),
         ] for drink in drinks], key=lambda entry: entry[0]),
-        headers=[
+        headers=(
             "ID",
             "name",
             "bottle size",
             "caffeine",
             "price",
             "active?"
-        ],
+        ),
     )
 
-def with_drink(func):
+def with_drink(func: Callable[[argparse.Namespace, Config, Connection, Thing], None]) -> Callable[[argparse.Namespace, Config], None]:
     def new_func(args: argparse.Namespace, config: Config) -> None:
         conn = Connection(config)
         drink = fuzzy_search(conn.drinks(), args.drink)
@@ -70,10 +71,10 @@ def with_drink(func):
     return new_func
 
 @with_drink
-def show(args: argparse.Namespace, config: Config, conn: Connection, drink: dict) -> None:
+def show(args: argparse.Namespace, config: Config, conn: Connection, drink: Thing) -> None:
     print_drink(drink, config)
 
-def print_drink(drink: dict, config: Config) -> None:
+def print_drink(drink: Thing, config: Config) -> None:
     print_table(config, [
             ["ID", drink["id"]],
             ["name", drink["name"]],
@@ -83,7 +84,7 @@ def print_drink(drink: dict, config: Config) -> None:
             ["active?", true_false_to_yes_no(drink["active"])],
     ])
 
-def edit_drink(data: dict) -> None:
+def edit_drink(data: Thing) -> None:
     show_edit(data, "name", "name", str)
     show_edit(data, "price", "price", float)
     show_edit(data, "bottle_size", "bottle size", float)
@@ -100,13 +101,13 @@ def add_drink(args: argparse.Namespace, config: Config) -> None:
     log.info("Created a new drink. Data: %s", data)
 
 @with_drink
-def modify(args: argparse.Namespace, config: Config, conn: Connection, data: dict) -> None:
+def modify(args: argparse.Namespace, config: Config, conn: Connection, data: Thing) -> None:
     log.debug("Editing drink. Old data: %s", data)
     edit_drink(data)
     log.info("Editing drink. New data: %s", data)
     conn.modify_drink(data)
 
-def _get_barcodes_for_drink(conn: Connection, drink: dict):
+def _get_barcodes_for_drink(conn: Connection, drink: Thing) -> Iterator[str]:
     all_barcodes = conn.barcodes()
     for barcode in all_barcodes:
         if barcode["drink"] == drink["id"]:
@@ -114,12 +115,12 @@ def _get_barcodes_for_drink(conn: Connection, drink: dict):
             yield barcode["id"]
 
 @with_drink
-def barcodes_list(args: argparse.Namespace, config: Config, conn: Connection, drink: dict) -> None:
+def barcodes_list(args: argparse.Namespace, config: Config, conn: Connection, drink: Thing) -> None:
     barcodes = _get_barcodes_for_drink(conn, drink)
     print_table(config, [[barcode] for barcode in barcodes])
 
 @with_drink
-def barcodes_add(args: argparse.Namespace, config: Config, conn: Connection, drink: dict) -> None:
+def barcodes_add(args: argparse.Namespace, config: Config, conn: Connection, drink: Thing) -> None:
     barcode = conn.get_barcode_defaults()
     barcode["drink"] = drink["id"]
     barcode["id"] = args.barcode
@@ -128,7 +129,7 @@ def barcodes_add(args: argparse.Namespace, config: Config, conn: Connection, dri
     log.info("Created new barcode '%s' for drink '%s'.", barcode["id"], drink["name"])
 
 @with_drink
-def barcodes_delete(args: argparse.Namespace, config: Config, conn: Connection, drink: dict) -> None:
+def barcodes_delete(args: argparse.Namespace, config: Config, conn: Connection, drink: Thing) -> None:
     barcodes = _get_barcodes_for_drink(conn, drink)
     if args.barcode not in list(barcodes):
         print("This barcode doesn't exist for this drink.")
@@ -137,7 +138,7 @@ def barcodes_delete(args: argparse.Namespace, config: Config, conn: Connection, 
     log.info("Deleted barcode '%s'.", args.barcode)
 
 @with_drink
-def delete(args: argparse.Namespace, config: Config, conn: Connection, drink: dict) -> None:
+def delete(args: argparse.Namespace, config: Config, conn: Connection, drink: Thing) -> None:
     if not args.force:
         log.debug("About to delete drink %s.", drink["name"])
         print("You are about to delete the drink '{}'.".format(drink["name"]))

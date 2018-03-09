@@ -1,19 +1,22 @@
-from .config import Config
+# from .config import Config (moved to bottom)
 
 from tabulate import tabulate
+from typing import Tuple, Dict, List, Iterable, Optional, Union
 
 import logging
 
 log = logging.getLogger(__name__)
 
-def print_table(config: Config, data: dict, headers: tuple = tuple()) -> None:
+Thing = Dict[str, object]
+
+def print_table(config: 'Config', data: Iterable[Tuple[object, ...]], headers: Tuple[str, ...] = tuple()) -> None:
     print(tabulate(
         data,
         headers=headers,
         tablefmt=config["display"]["table_format"],
     ))
 
-def fuzzy_search(things: list, search_for: str) -> object:
+def fuzzy_search(things: List[Thing], search_for: str) -> Optional[Thing]:
     possible_things = list()
     selected_thing = None
     if search_for.isdecimal():
@@ -39,7 +42,7 @@ def fuzzy_search(things: list, search_for: str) -> object:
         print("No match was found.")
         return None
 
-def find_by_id(things: list, id: int) -> object:
+def find_by_id(things: List[Thing], id: Union[int, str]) -> Optional[Thing]:
     log.debug("Searching for %s in %s...", id, things)
     for thing in things:
         if thing["id"] == id:
@@ -57,7 +60,7 @@ def test_terminal_utf8() -> None:
 def true_false_to_yes_no(value: bool) -> str:
     return "yes" if value else "no"
 
-def yes_no_to_true_false(value: str) -> bool:
+def yes_no_to_true_false(value: str) -> Optional[bool]:
     if value in ("yes", "y"):
         return True
     if value in ("no", "n"):
@@ -71,7 +74,7 @@ def yn(prompt: str) -> bool:
             return entered
         print("Please enter 'yes' or 'no'.")
 
-def show_edit(dict: dict, key: str, prompt: str, type) -> None:
+def show_edit(dict: Thing, key: str, prompt: str, type: object) -> None:
     old_value = dict[key]
     if type == bool:
         old_value = true_false_to_yes_no(old_value)
@@ -122,3 +125,5 @@ def show_edit(dict: dict, key: str, prompt: str, type) -> None:
         else:
             raise Exception("Unknown type. (Please report this isssue!)")
     dict[key] = new_value
+
+from .config import Config

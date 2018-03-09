@@ -1,8 +1,9 @@
 from .config import Config
 from .connection import Connection
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, Thing
 
+from typing import List, Optional
 import argparse
 import logging
 log = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
     parser.set_defaults(func=lambda args, config: Account(config).show(args))
 
-def edit_user(data: dict) -> None:
+def edit_user(data: Thing) -> None:
     show_edit(data, "name", "name", str)
     show_edit(data, "email", "email", "email")
     show_edit(data, "balance", "account balance", float)
@@ -95,23 +96,23 @@ class Account():
         if not self._conf["connection"]["uid"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
-            self._uid = self._conf["connection"]["uid"]
+            self._uid = self._conf["connection"]["uid"] # type: Optional[int]
     
     def show(self, args: argparse.Namespace) -> None:
         """Displays information about this user."""
         data = self._conn.get_user(self._uid)
         self._print_user(data)
     
-    def _print_user(self, data: dict) -> None:
-        table_data = [
-            ["ID", data["id"]],
-            ["name", data["name"]],
-            ["email", data["email"]],
-            ["account balance", "{:.2f} €".format(float(data["balance"]))],
-            ["active?", true_false_to_yes_no(data["active"])],
-            ["log transactions?", true_false_to_yes_no(data["audit"])],
-            ["redirect after buying something?", true_false_to_yes_no(data["redirect"])]
-        ]
+    def _print_user(self, data: Thing) -> None:
+        table_data = (
+            ("ID", data["id"]),
+            ("name", data["name"]),
+            ("email", data["email"]),
+            ("account balance", "{:.2f} €".format(float(data["balance"]))),
+            ("active?", true_false_to_yes_no(data["active"])),
+            ("log transactions?", true_false_to_yes_no(data["audit"])),
+            ("redirect after buying something?", true_false_to_yes_no(data["redirect"]))
+        )
         print_table(self._conf, table_data)
         
     def modify(self, args: argparse.Namespace) -> None:
@@ -145,7 +146,7 @@ class Account():
             return
         self._buy(drink)
     
-    def _buy(self, drink: dict) -> None:
+    def _buy(self, drink: Thing) -> None:
         log.info("Buying %s...", drink["name"])
         self._conn.buy(self._uid, drink["id"])
         data = self._conn.get_user(self._uid)

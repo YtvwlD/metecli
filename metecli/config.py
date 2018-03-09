@@ -1,10 +1,10 @@
-from .config import Config
 from .connection import Connection
 
 import yaml
 import os
 import sys
 from contextlib import suppress
+from typing import Callable, Optional
 
 import argparse
 import logging
@@ -37,11 +37,11 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser_set.set_defaults(func=set)
     parser.set_defaults(func=display)
 
-def display(args: argparse.Namespace, config: Config) -> None:
+def display(args: argparse.Namespace, config: 'Config') -> None:
     print(yaml.safe_dump(config._settings, default_flow_style=False))
 
-def handle_KeyError(func):
-    def new_func(args: argparse.Namespace, config: Config) -> None:
+def handle_KeyError(func: Callable[[argparse.Namespace, 'Config'], None]) -> Callable[[argparse.Namespace, 'Config'], None]:
+    def new_func(args: argparse.Namespace, config: 'Config') -> None:
         try:
             func(args, config)
         except KeyError:
@@ -49,7 +49,7 @@ def handle_KeyError(func):
     return new_func
 
 @handle_KeyError
-def get(args: argparse.Namespace, config: Config) -> None:
+def get(args: argparse.Namespace, config: 'Config') -> None:
     path = args.key.split(".")
     current = config
     for part in path:
@@ -58,7 +58,7 @@ def get(args: argparse.Namespace, config: Config) -> None:
     print(current)
 
 @handle_KeyError
-def set(args: argparse.Namespace, config: Config) -> None:
+def set(args: argparse.Namespace, config: 'Config') -> None:
     path = args.key.split(".")
     current = config._settings
     for i in range(len(path)):
@@ -73,7 +73,7 @@ def set(args: argparse.Namespace, config: Config) -> None:
     config.save()
 
 class Config():
-    def __init__(self, path=None, name=None) -> None:
+    def __init__(self, path: Optional[str] = None, name: Optional[str] = None) -> None:
         self._search_config_file_path(path, name)
         self._open_or_create()
         self._migrate()
@@ -87,7 +87,7 @@ class Config():
     def __repr__(self) -> str:
         return repr(self._settings)
     
-    def _search_config_file_path(self, path: str, name: str) -> None:
+    def _search_config_file_path(self, path: Optional[str], name: Optional[str]) -> None:
         if path:
             log.info("Config path was specified: %s", path)
             config_path = path

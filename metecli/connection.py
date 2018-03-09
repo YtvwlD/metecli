@@ -1,13 +1,16 @@
-from .config import Config
+# from .config import Config (moved to bottom)
+# from .utils import Thing (moved to bottom)
 
 from requests import Session
 from urllib.parse import urljoin
+from datetime import datetime
+from typing import Optional, List, Dict
 
 import logging
 log = logging.getLogger(__name__)
 
 class Connection():
-    def __init__(self, config: Config, base_url=None) -> None:
+    def __init__(self, config: Optional['Config'], base_url: Optional[str] = None) -> None:
         self._sess = Session()
         if config and not base_url:
             self._conf = config
@@ -26,13 +29,13 @@ class Connection():
         else:
             raise Exception("Either config *or* base_url must be provided.")
     
-    def users(self) -> list:
+    def users(self) -> List['Thing']:
         """Lists all users."""
         r = self._sess.get(urljoin(self._base_url, "users.json"))
         r.raise_for_status()
         return r.json()
     
-    def audits(self, user=None, from_date=None, to_date=None) -> dict:
+    def audits(self, user: Optional[int] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> Dict[str, object]:
         """Get audits."""
         params = dict()
         if user:
@@ -50,13 +53,13 @@ class Connection():
         r.raise_for_status()
         return r.json()
     
-    def get_user(self, uid: int) -> dict:
+    def get_user(self, uid: int) -> 'Thing':
         """Get information about a user."""
         r = self._sess.get(urljoin(self._base_url, "users/{}.json".format(uid)))
         r.raise_for_status()
         return r.json()
     
-    def modify_user(self, user: dict) -> None:
+    def modify_user(self, user: 'Thing') -> None:
         """Modifys an existing user."""
         r = self._sess.patch(urljoin(self._base_url, "users/{}.json").format(user["id"]), json=user)
         r.raise_for_status()
@@ -65,13 +68,13 @@ class Connection():
         r = self._sess.delete(urljoin(self._base_url, "users/{}.json".format(uid)))
         r.raise_for_status()
     
-    def get_user_defaults(self) -> dict:
+    def get_user_defaults(self) -> 'Thing':
         """Gets the default settings for creating a new user."""
         r = self._sess.get(urljoin(self._base_url, "users/new.json"))
         r.raise_for_status()
         return r.json()
     
-    def add_user(self, user: dict) -> dict:
+    def add_user(self, user: 'Thing') -> 'Thing':
         """Creates a new user."""
         r = self._sess.post(urljoin(self._base_url, "users.json"), json=user)
         r.raise_for_status()
@@ -98,24 +101,24 @@ class Connection():
         self.pay(sender, amount)
         self.deposit(receiver, amount)
     
-    def drinks(self) -> list:
+    def drinks(self) -> List['Thing']:
         """Lists all drinks."""
         r = self._sess.get(urljoin(self._base_url, "drinks.json"))
         r.raise_for_status()
         return r.json()
     
-    def modify_drink(self, drink: dict) -> None:
+    def modify_drink(self, drink: 'Thing') -> None:
         """Modifys an existing drink."""
         r = self._sess.patch(urljoin(self._base_url, "drinks/{}.json").format(drink["id"]), json=drink)
         r.raise_for_status()
     
-    def get_drink_defaults(self) -> dict:
+    def get_drink_defaults(self) -> 'Thing':
         """Gets the default settings for creating a new drink."""
         r = self._sess.get(urljoin(self._base_url, "drinks/new.json"))
         r.raise_for_status()
         return r.json()
     
-    def create_drink(self, drink: dict) -> dict:
+    def create_drink(self, drink: 'Thing') -> 'Thing':
         """Creates a new drink."""
         r = self._sess.post(urljoin(self._base_url, "drinks.json"), json=drink)
         r.raise_for_status()
@@ -126,18 +129,18 @@ class Connection():
         r = self._sess.delete(urljoin(self._base_url, "drinks/{}.json").format(drink_id))
         r.raise_for_status()
     
-    def barcodes(self) -> list:
+    def barcodes(self) -> List['Thing']:
         """Lists all barcodes."""
         r = self._sess.get(urljoin(self._base_url, "barcodes.json"))
         return r.json()
     
-    def get_barcode_defaults(self) -> dict:
+    def get_barcode_defaults(self) -> 'Thing':
         """Get the defaults for creating new barcodes."""
         r = self._sess.get(urljoin(self._base_url, "barcodes/new.json"))
         r.raise_for_status()
         return r.json()
     
-    def create_barcode(self, barcode: dict) -> dict:
+    def create_barcode(self, barcode: 'Thing') -> 'Thing':
         """Creates a new barcode."""
         r = self._sess.post(urljoin(self._base_url, "barcodes.json"), json=barcode)
         r.raise_for_status()
@@ -190,3 +193,6 @@ class Connection():
             self._conf["connection"]["api_version"] = self._api_version
             self._conf["connection"]["base_url"] = self._base_url
             self._conf.save()
+
+from .config import Config
+from .utils import Thing
