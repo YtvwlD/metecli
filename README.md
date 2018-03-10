@@ -27,9 +27,10 @@ Upgrading (or downgrading) is done the same way as installing.
 
 1. Clone this repository. (`git clone https://github.com/YtvwlD/metecli.git`)
 2. Install the dependencies (either via your distribution's package manager or via pip):
-   2.1. requests
-   2.2. PyYAML
-   2.3. tabulate
+   1. requests
+   2. PyYAML
+   3. tabulate
+   4. typing (not needed when running on Python 3.5 or newer)
 3. Start it. (`./run.sh`)
 4. Remember to mentally replace `metecli` with `./run.sh` in the next sections.
 
