@@ -18,7 +18,7 @@ setup(
     name='metecli',
 
     # Versions should comply with PEP440.
-    version='0.7.0',
+    version='0.8.0',
 
     description='a cli for mete',
     long_description=read_md(path.join(here, 'README.md')),
