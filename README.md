@@ -43,6 +43,8 @@ $ metecli setup
 Please enter the url for mete: http://mete/
 The URL you entered doesn't use HTTPS. Do you want to try again? (y/n) n
 WARNING:metecli.setup:Using HTTP. The connection won't be secure.
+Do want to setup an account now? (y/n) y
+Do you already have an account? (y/n) y
 Please enter your username (or a part of it) or your uid: 1
 ```
 
