@@ -79,6 +79,7 @@ class Config():
         self._search_config_file_path(path, name)
         self._open_or_create()
         self._migrate()
+        self._warn_on_downgrade()
     
     def __getitem__(self, key: str):
         return self._settings[key]
@@ -183,6 +184,14 @@ class Config():
                 del self["connection"]["uid"]
             self["version"] = 5
             self.save()
+    
+    def _warn_on_downgrade(self):
+        if self["version"] > DEFAULT_SETTINGS["version"]:
+            log.warning(
+                "The configuration file has version %d, "
+                + "but this version of metecli only supports version %d.",
+                self["version"], DEFAULT_SETTINGS["version"])
+            log.warning("Downgrading isn't recommended. The program might crash at any moment!")
     
     def save(self) -> None:
         log.debug("Saving config....")
