@@ -97,7 +97,7 @@ class Connection():
     
     def transfer(self, sender: int, receiver: int, amount: float) -> None:
         """Transfer money."""
-        log.warning("This feature isn't really supported by the server. Use it with caution.")
+        log.warn("This feature isn't really supported by the server. Use it with caution.")
         self.pay(sender, amount)
         self.deposit(receiver, amount)
     
@@ -184,7 +184,7 @@ class Connection():
                     changed = True
             except:
                 # something went wrong
-                log.warning("The server doesn't support API version '%s'. (Or the connection failed.)", upgrade[1])
+                log.warn("The server doesn't support API version '%s'. (Or the connection failed.)", upgrade[1])
                 # restore the old values
                 self._api_version = upgrade[0]
                 self._base_url = old_base_url

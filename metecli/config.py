@@ -187,11 +187,11 @@ class Config():
     
     def _warn_on_downgrade(self):
         if self["version"] > DEFAULT_SETTINGS["version"]:
-            log.warning(
+            log.warn(
                 "The configuration file has version %d, "
                 + "but this version of metecli only supports version %d.",
                 self["version"], DEFAULT_SETTINGS["version"])
-            log.warning("Downgrading isn't recommended. The program might crash at any moment!")
+            log.warn("Downgrading isn't recommended. The program might crash at any moment!")
     
     def save(self) -> None:
         log.debug("Saving config....")
