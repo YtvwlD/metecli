@@ -1,6 +1,6 @@
 from .utils import fuzzy_search, find_by_id, print_table, Thing
 from .config import Config
-from .connection import Connection
+from .connection.connection import Connection
 
 from datetime import datetime
 from typing import List, Tuple, Dict, Iterator, Optional

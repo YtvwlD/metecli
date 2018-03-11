@@ -1,4 +1,4 @@
-from .connection import Connection
+from .connection.connection import Connection
 
 import yaml
 import os

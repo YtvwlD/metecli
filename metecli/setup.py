@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 from typing import Tuple
-from .connection import Connection
+from .connection.connection import Connection
 from .config import Config
 from .utils import yn
 from . import account

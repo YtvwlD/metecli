@@ -1,6 +1,6 @@
 from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn, Thing
 from .config import Config
-from .connection import Connection
+from .connection.connection import Connection
 
 from typing import Callable, Iterator
 import argparse

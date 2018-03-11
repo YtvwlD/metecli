@@ -1,5 +1,5 @@
 from .config import Config
-from .connection import Connection
+from .connection.connection import Connection
 from . import audits
 from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, Thing
 
