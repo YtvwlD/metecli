@@ -11,10 +11,12 @@ import logging
 log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
-    "version": 4,
+    "version": 5,
     "connection": {
         "base_url": None,
         "api_version": None,
+    },
+    "account": {
         "uid": None,
     },
     "display": {
@@ -169,6 +171,17 @@ class Config():
             else:
                 self["connection"]["api_version"] = None
             self["version"] = 4
+            self.save()
+        if self["version"] == 4: # v4 -> v5
+            log.info("Migrationg to v5: Splitting account section and connection section.")
+            if "account" not in self._settings:
+                self["account"] = dict()
+            if "uid" not in self["account"]:
+                assert "uid" in self["connection"]
+                self["account"]["uid"] = self["connection"]["uid"]
+            if "uid" in self["connection"]:
+                del self["connection"]["uid"]
+            self["version"] = 5
             self.save()
     
     def save(self) -> None:

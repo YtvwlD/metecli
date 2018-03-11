@@ -85,7 +85,7 @@ def get_uid(conn: Connection) -> int:
 def select(args: argparse.Namespace, config: Config) -> None:
     conn = Connection(config)
     uid = get_uid(conn)
-    config["connection"]["uid"] = uid
+    config["account"]["uid"] = uid
     config.save()
     log.info("UID %i configured.", uid)
 
@@ -93,10 +93,10 @@ class Account():
     def __init__(self, config: Config) -> None:
         self._conf = config
         self._conn = Connection(config)
-        if not self._conf["connection"]["uid"]:
+        if not self._conf["account"]["uid"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
-            self._uid = self._conf["connection"]["uid"] # type: Optional[int]
+            self._uid = self._conf["account"]["uid"] # type: Optional[int]
     
     def show(self, args: argparse.Namespace) -> None:
         """Displays information about this user."""
@@ -198,7 +198,7 @@ class Account():
                 log.debug("Deletion cancelled.")
                 return
         self._conn.delete_user(user["id"])
-        self._conf["connection"]["uid"] = None
+        self._conf["account"]["uid"] = None
         self._conf.save()
         self._uid = None
         log.info("Deleted account '%s'.", user["name"])
