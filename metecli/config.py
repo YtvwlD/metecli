@@ -1,4 +1,5 @@
 from .connection.connection import Connection
+from .connection.config import DEFAULT_SETTINGS as DEFAULT_CONNECTION_SETTINGS
 
 import yaml
 import os
@@ -12,10 +13,7 @@ log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
     "version": 5,
-    "connection": {
-        "base_url": None,
-        "api_version": None,
-    },
+    "connection": DEFAULT_CONNECTION_SETTINGS,
     "account": {
         "uid": None,
     },
