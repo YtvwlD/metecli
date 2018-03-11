@@ -1,5 +1,5 @@
-# from .config import Config (moved to bottom)
-# from .utils import Thing (moved to bottom)
+# from metecli.config import Config (moved to bottom)
+# from metecli.utils import Thing (moved to bottom)
 
 from requests import Session
 from urllib.parse import urljoin
@@ -194,5 +194,5 @@ class Connection():
             self._conf["connection"]["base_url"] = self._base_url
             self._conf.save()
 
-from .config import Config
-from .utils import Thing
+from metecli.config import Config
+from metecli.utils import Thing
