@@ -1,4 +1,6 @@
 # from .config import Config (moved to bottom)
+from .connection.connection import Connection
+from .connection.config import Config as ConnectionConfig
 
 from tabulate import tabulate
 from typing import Tuple, Dict, List, Iterable, Optional, Union
@@ -8,6 +10,10 @@ import logging
 log = logging.getLogger(__name__)
 
 Thing = Dict[str, object]
+
+def connect(config: 'Config') -> Connection:
+    connection_config = ConnectionConfig(config["connection"], config.save)
+    return Connection(connection_config)
 
 def print_table(config: 'Config', data: Iterable[Tuple[object, ...]], headers: Tuple[str, ...] = tuple()) -> None:
     print(tabulate(

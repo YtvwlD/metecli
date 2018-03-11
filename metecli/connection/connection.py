@@ -1,4 +1,4 @@
-# from metecli.config import Config (moved to bottom)
+from .config import Config
 # from metecli.utils import Thing (moved to bottom)
 
 from requests import Session
@@ -14,12 +14,12 @@ class Connection():
         self._sess = Session()
         if config and not base_url:
             self._conf = config
-            if not config["connection"]["base_url"]:
+            if not config["base_url"]:
                 raise Exception("The connection is not configured yet.")
-            self._base_url = config["connection"]["base_url"]
-            if not config["connection"]["api_version"]:
+            self._base_url = config["base_url"]
+            if not config["api_version"]:
                 raise Exception("The configured connection doesn't have api_version set.")
-            self._api_version = config["connection"]["api_version"]
+            self._api_version = config["api_version"]
             assert self._api_version in ("legacy", "v1")
             self._try_upgrade()
         elif base_url and not config:
@@ -190,9 +190,8 @@ class Connection():
                 self._base_url = old_base_url
         if changed and self._conf:
             # save the new values
-            self._conf["connection"]["api_version"] = self._api_version
-            self._conf["connection"]["base_url"] = self._base_url
+            self._conf["api_version"] = self._api_version
+            self._conf["base_url"] = self._base_url
             self._conf.save()
 
-from metecli.config import Config
 from metecli.utils import Thing

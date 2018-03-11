@@ -1,4 +1,4 @@
-from .utils import fuzzy_search, find_by_id, print_table, Thing
+from .utils import fuzzy_search, find_by_id, print_table, Thing, connect
 from .config import Config
 from .connection.connection import Connection
 
@@ -24,7 +24,7 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser.set_defaults(func=do)
 
 def do(args: argparse.Namespace, config: Config) -> None:
-    conn = Connection(config)
+    conn = connect(config)
     show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
 
 def _create_table(audits: Dict[str, object], drinks: List[Thing]) -> Iterator[Tuple[datetime, str, float]]:

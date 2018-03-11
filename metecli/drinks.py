@@ -1,4 +1,4 @@
-from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn, Thing
+from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn, Thing, connect
 from .config import Config
 from .connection.connection import Connection
 
@@ -39,7 +39,7 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser.set_defaults(func=list_drinks)
 
 def list_drinks(args: argparse.Namespace, config: Config) -> None:
-    conn = Connection(config)
+    conn = connect(config)
     drinks = conn.drinks()
     print("All drinks:")
     print_table(config,
@@ -63,7 +63,7 @@ def list_drinks(args: argparse.Namespace, config: Config) -> None:
 
 def with_drink(func: Callable[[argparse.Namespace, Config, Connection, Thing], None]) -> Callable[[argparse.Namespace, Config], None]:
     def new_func(args: argparse.Namespace, config: Config) -> None:
-        conn = Connection(config)
+        conn = connect(config)
         drink = fuzzy_search(conn.drinks(), args.drink)
         if not drink:
             return
@@ -92,7 +92,7 @@ def edit_drink(data: Thing) -> None:
     show_edit(data, "active", "active?", bool)
 
 def add_drink(args: argparse.Namespace, config: Config) -> None:
-    conn = Connection(config)
+    conn = connect(config)
     data = conn.get_drink_defaults()
     log.debug("Creating a new drink. Default data: %s", data)
     edit_drink(data)

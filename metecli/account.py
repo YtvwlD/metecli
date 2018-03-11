@@ -1,7 +1,7 @@
 from .config import Config
 from .connection.connection import Connection
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, Thing
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, Thing, connect
 
 from typing import List, Optional
 import argparse
@@ -52,7 +52,7 @@ def edit_user(data: Thing) -> None:
     show_edit(data, "redirect", "redirect after buying something?", bool)
 
 def create(args: argparse.Namespace, config: Config) -> None:
-    conn = Connection(config)
+    conn = connect(config)
     data = conn.get_user_defaults()
     log.debug("Creating new user. Default data: %s", data)
     edit_user(data)
@@ -83,7 +83,7 @@ def get_uid(conn: Connection) -> int:
             print("No matching account found. Please try again.")
 
 def select(args: argparse.Namespace, config: Config) -> None:
-    conn = Connection(config)
+    conn = connect(config)
     uid = get_uid(conn)
     config["account"]["uid"] = uid
     config.save()
@@ -92,7 +92,7 @@ def select(args: argparse.Namespace, config: Config) -> None:
 class Account():
     def __init__(self, config: Config) -> None:
         self._conf = config
-        self._conn = Connection(config)
+        self._conn = connect(config)
         if not self._conf["account"]["uid"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
