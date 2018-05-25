@@ -6,6 +6,8 @@ from setuptools import setup, find_packages
 from os import path
 here = path.abspath(path.dirname(__file__))
 
+from metecli import _version
+
 # taken from https://stackoverflow.com/a/23265673/2192464
 try:
     from pypandoc import convert
@@ -18,7 +20,7 @@ setup(
     name='metecli',
 
     # Versions should comply with PEP440.
-    version='0.8.0',
+    version=_version,
 
     description='a cli for mete',
     long_description=read_md(path.join(here, 'README.md')),
