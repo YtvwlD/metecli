@@ -26,7 +26,7 @@ def fuzzy_search(things: List[Thing], search_for: str) -> Optional[Thing]:
             if search_for == thing["name"]:
                 selected_thing = thing
                 break
-            elif search_for in thing["name"]:
+            elif search_for.casefold() in thing["name"].casefold():
                 possible_things.append(thing)
     if not selected_thing and len(possible_things) == 1:
         log.info("No exact match, but %s is the only possibility.", possible_things[0]["name"])
