@@ -54,7 +54,7 @@ def find_by_id(things: List[Thing], id: Union[int, str]) -> Optional[Thing]:
 def test_terminal_utf8() -> None:
     """Produces a warning if the system isn't correctly configured to output UTF-8."""
     from sys import stdout
-    if stdout.encoding != "UTF-8":
+    if stdout.encoding.upper() != "UTF-8":
         log.warning("Your system doesn't seem support UTF-8. Please consider fixing this.")
 
 def true_false_to_yes_no(value: bool) -> str:
