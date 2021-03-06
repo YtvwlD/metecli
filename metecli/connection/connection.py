@@ -1,4 +1,5 @@
 from .config import Config
+from .user import User
 # from metecli.utils import Thing (moved to bottom)
 
 from requests import Session
@@ -29,11 +30,11 @@ class Connection():
         else:
             raise Exception("Either config *or* base_url must be provided.")
     
-    def users(self) -> List['Thing']:
+    def users(self) -> List[User]:
         """Lists all users."""
         r = self._sess.get(urljoin(self._base_url, "users.json"))
         r.raise_for_status()
-        return r.json()
+        return [User.from_v1(u) for u in r.json()]
     
     def audits(self, user: Optional[int] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> Dict[str, object]:
         """Get audits."""
@@ -53,32 +54,32 @@ class Connection():
         r.raise_for_status()
         return r.json()
     
-    def get_user(self, uid: int) -> 'Thing':
+    def get_user(self, uid: int) -> User:
         """Get information about a user."""
         r = self._sess.get(urljoin(self._base_url, "users/{}.json".format(uid)))
         r.raise_for_status()
-        return r.json()
+        return User.from_v1(r.json())
     
-    def modify_user(self, user: 'Thing') -> None:
+    def modify_user(self, user: User) -> None:
         """Modifys an existing user."""
-        r = self._sess.patch(urljoin(self._base_url, "users/{}.json").format(user["id"]), json=user)
+        r = self._sess.patch(urljoin(self._base_url, "users/{}.json").format(user.id), json=user.to_v1())
         r.raise_for_status()
     
     def delete_user(self, uid: int) -> None:
         r = self._sess.delete(urljoin(self._base_url, "users/{}.json".format(uid)))
         r.raise_for_status()
     
-    def get_user_defaults(self) -> 'Thing':
+    def get_user_defaults(self) -> User:
         """Gets the default settings for creating a new user."""
         r = self._sess.get(urljoin(self._base_url, "users/new.json"))
         r.raise_for_status()
-        return r.json()
+        return User.from_v1(r.json())
     
-    def add_user(self, user: 'Thing') -> 'Thing':
+    def add_user(self, user: User) -> User:
         """Creates a new user."""
-        r = self._sess.post(urljoin(self._base_url, "users.json"), json=user)
+        r = self._sess.post(urljoin(self._base_url, "users.json"), json=user.to_v1())
         r.raise_for_status()
-        return r.json()
+        return User(r.json())
     
     def buy(self, uid: int, did: int) -> None:
         """Buy a drink."""

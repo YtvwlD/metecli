@@ -2,8 +2,9 @@
 from .connection.connection import Connection
 from .connection.config import Config as ConnectionConfig
 
+from functools import partial
 from tabulate import tabulate
-from typing import Tuple, Dict, List, Iterable, Optional, Union
+from typing import Any, Tuple, Dict, List, Iterable, Optional, Union
 
 import logging
 
@@ -29,20 +30,26 @@ def fuzzy_search(things: List[Thing], search_for: str) -> Optional[Thing]:
         selected_thing = find_by_id(things, int(search_for))
     else:
         for thing in things:
-            if search_for == thing["name"]:
+            if search_for == _get(thing, "name"):
                 selected_thing = thing
                 break
-            elif search_for in thing["name"]:
+            elif search_for in _get(thing, "name"):
                 possible_things.append(thing)
     if not selected_thing and len(possible_things) == 1:
-        log.info("No exact match, but %s is the only possibility.", possible_things[0]["name"])
+        log.info(
+            "No exact match, but %s is the only possibility.",
+            _get(possible_things[0], "name")
+        )
         selected_thing = possible_things[0]
     if selected_thing:
-        log.debug("Found %s.", selected_thing["name"])
+        log.debug("Found %s.", _get(selected_thing, "name"))
         return selected_thing
     elif possible_things:
         print("No exact match was found.")
-        print("Possibilities:", ["{} ({})".format(thing["name"], thing["id"]) for thing in possible_things])
+        print("Possibilities:", [
+            "{} ({})".format(_get(thing, "name"), _get(thing, "id"))
+            for thing in possible_things
+        ])
         return None
     else:
         print("No match was found.")
@@ -51,7 +58,7 @@ def fuzzy_search(things: List[Thing], search_for: str) -> Optional[Thing]:
 def find_by_id(things: List[Thing], id: Union[int, str]) -> Optional[Thing]:
     log.debug("Searching for %s in %s...", id, things)
     for thing in things:
-        if thing["id"] == id:
+        if _get(thing, "id") == id:
             log.debug("Found %s.", thing)
             return thing
     log.debug("No match.")
@@ -81,7 +88,7 @@ def yn(prompt: str) -> bool:
         print("Please enter 'yes' or 'no'.")
 
 def show_edit(dict: Thing, key: str, prompt: str, type: object) -> None:
-    old_value = dict[key]
+    old_value = _get(dict, key)
     if type == bool:
         old_value = true_false_to_yes_no(old_value)
     final_prompt = "{} [{}]: ".format(prompt, old_value)
@@ -130,6 +137,15 @@ def show_edit(dict: Thing, key: str, prompt: str, type: object) -> None:
                 continue
         else:
             raise Exception("Unknown type. (Please report this isssue!)")
-    dict[key] = new_value
+    if hasattr(dict, "get"):
+        dict[key] = new_value
+    else:
+        setattr(dict, key, new_value)
+
+def _get(thing: Thing, key: str) -> Any:
+    """Get attributes by trying both [key] and .key.
+    
+    This is used to support both Things and specialized types."""
+    return getattr(thing, "get", partial(getattr, thing))(key)
 
 from .config import Config

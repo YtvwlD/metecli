@@ -1,5 +1,6 @@
 from .config import Config
 from .connection.connection import Connection
+from .connection.user import User
 from . import audits
 from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, Thing, connect
 
@@ -42,23 +43,22 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
     parser.set_defaults(func=lambda args, config: Account(config).show(args))
 
-def edit_user(data: Thing) -> None:
+def edit_user(data: User) -> None:
     show_edit(data, "name", "name", str)
     show_edit(data, "email", "email", "email")
     show_edit(data, "balance", "account balance", float)
-    data["balance"] = str(data["balance"])
     show_edit(data, "active", "active?", bool)
     show_edit(data, "audit", "log transactions?", bool)
     show_edit(data, "redirect", "redirect after buying something?", bool)
 
 def create(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
-    data = conn.get_user_defaults()
-    log.debug("Creating new user. Default data: %s", data)
-    edit_user(data)
-    log.debug("Creating new user. Data: %s", data)
-    data = conn.add_user(data)
-    log.info("Created new user. Data: %s", data)
+    user = conn.get_user_defaults()
+    log.debug("Creating new user. Default data: %s", user)
+    edit_user(user)
+    log.debug("Creating new user. Data: %s", user)
+    user = conn.add_user(user)
+    log.info("Created new user. Data: %s", user)
 
 def get_uid(conn: Connection) -> int:
     log.info("Loading all users...")
@@ -72,9 +72,9 @@ def get_uid(conn: Connection) -> int:
                 found = True
         else:
             for user in users:
-                if given in user["name"]:
-                    if yn("Is '{}' ({}) your account?".format(user["name"], user["email"])):
-                        uid = user["id"]
+                if given in user.name:
+                    if yn("Is '{}' ({}) your account?".format(user.name, user.email)):
+                        uid = user.id
                         found = True
                         break
         if found:
@@ -103,15 +103,15 @@ class Account():
         data = self._conn.get_user(self._uid)
         self._print_user(data)
     
-    def _print_user(self, data: Thing) -> None:
+    def _print_user(self, user: User) -> None:
         table_data = (
-            ("ID", data["id"]),
-            ("name", data["name"]),
-            ("email", data["email"]),
-            ("account balance", "{:.2f} €".format(float(data["balance"]))),
-            ("active?", true_false_to_yes_no(data["active"])),
-            ("log transactions?", true_false_to_yes_no(data["audit"])),
-            ("redirect after buying something?", true_false_to_yes_no(data["redirect"]))
+            ("ID", user.id),
+            ("name", user.name),
+            ("email", user.email),
+            ("account balance", "{:.2f} €".format(user.balance)),
+            ("active?", true_false_to_yes_no(user.active)),
+            ("log transactions?", true_false_to_yes_no(user.audit)),
+            ("redirect after buying something?", true_false_to_yes_no(user.redirect)),
         )
         print_table(self._conf, table_data)
         
@@ -150,11 +150,10 @@ class Account():
         log.info("Buying %s...", drink["name"])
         self._conn.buy(self._uid, drink["id"])
         data = self._conn.get_user(self._uid)
-        balance = float(data["balance"])
-        log.info("Success! You bought {} and your new balance is {}.".format(drink["name"], balance))
-        if balance < 0:
+        log.info("Success! You bought {} and your new balance is {}.".format(drink["name"], data.balance))
+        if data.balance < 0:
             log.warn("Your balance is below zero. Remember to compensate as soon as possible.")
-        if data["audit"]:
+        if data.audit:
             log.info("This transaction has been logged, because you set up your account that way.")
     
     def pay(self, args: argparse.Namespace) -> None:
@@ -170,24 +169,24 @@ class Account():
         if not receiver_found:
             print("Couldn't find a receiver with this name.")
             return
-        log.info("Transferring %f to %s...", args.amount, receiver_found["name"])
-        self._conn.transfer(self._uid, receiver_found["id"], args.amount)
+        log.info("Transferring %f to %s...", args.amount, receiver_found.name)
+        self._conn.transfer(self._uid, receiver_found.id, args.amount)
     
     def delete(self, args: argparse.Namespace) -> None:
         user = self._conn.get_user(self._uid)
         if not args.force:
-            log.debug("About to delete account '%s'.", user["name"])
-            print("You are about to delete the account '{}'.".format(user["name"]))
+            log.debug("About to delete account '%s'.", user.name)
+            print("You are about to delete the account '{}'.".format(user.name))
             if not yn("Are you sure about this?"):
                 log.debug("Deletion cancelled.")
                 return
             given = input("Then please enter the name of the account you want to delete: ")
-            if given != user["name"]:
+            if given != user.name:
                 log.debug("Deletion cancelled.")
                 print("This was not correct. Cancelling deletion.")
                 return
             given = input("Then please enter the email address of the account you want to delete: ")
-            if given != user["email"]:
+            if given != user.email:
                 log.debug("Deletion cancelled.")
                 print("This was not correct. Cancelling deletion.")
                 return
@@ -197,8 +196,8 @@ class Account():
             if not yn("Are you really sure about this?"):
                 log.debug("Deletion cancelled.")
                 return
-        self._conn.delete_user(user["id"])
+        self._conn.delete_user(user.id)
         self._conf["account"]["uid"] = None
         self._conf.save()
         self._uid = None
-        log.info("Deleted account '%s'.", user["name"])
+        log.info("Deleted account '%s'.", user.name)
