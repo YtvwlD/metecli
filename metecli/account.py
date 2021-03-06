@@ -1,5 +1,6 @@
 from .config import Config
 from .connection.connection import Connection
+from .connection.user import User
 from . import audits
 from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, Thing, connect
 
@@ -42,7 +43,7 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
     parser.set_defaults(func=lambda args, config: Account(config).show(args))
 
-def edit_user(data: Thing) -> None:
+def edit_user(data: User) -> None:
     show_edit(data, "name", "name", str)
     show_edit(data, "email", "email", "email")
     show_edit(data, "balance", "account balance", float)
@@ -53,12 +54,12 @@ def edit_user(data: Thing) -> None:
 
 def create(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
-    data = conn.get_user_defaults()
-    log.debug("Creating new user. Default data: %s", data)
-    edit_user(data)
-    log.debug("Creating new user. Data: %s", data)
-    data = conn.add_user(data)
-    log.info("Created new user. Data: %s", data)
+    user = conn.get_user_defaults()
+    log.debug("Creating new user. Default data: %s", user)
+    edit_user(user)
+    log.debug("Creating new user. Data: %s", user)
+    user = conn.add_user(user)
+    log.info("Created new user. Data: %s", user)
 
 def get_uid(conn: Connection) -> int:
     log.info("Loading all users...")
