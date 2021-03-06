@@ -12,6 +12,8 @@ log = logging.getLogger(__name__)
 def get_url() -> Tuple[str, Connection]:
     while True:
         given = input("Please enter the url for mete: ")
+        if not given.endswith("/"):
+            given += "/"
         parsed = urlparse(given)
         if parsed.scheme not in ("http", "https"):
             print("Unknown URL scheme '{}'. Please try again.".format(parsed.scheme))
