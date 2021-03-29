@@ -44,14 +44,14 @@ def list_drinks(args: argparse.Namespace, config: Config) -> None:
     drinks = conn.drinks()
     print("All drinks:")
     print_table(config,
-        sorted([[
+        sorted([(
             drink.id,
             drink.name,
             drink.bottle_size,
             drink.caffeine,
             "{:.2f} €".format(drink.price),
             true_false_to_yes_no(drink.active),
-        ] for drink in drinks], key=lambda entry: entry[0]),
+        ) for drink in drinks], key=lambda entry: entry[0]),
         headers=(
             "ID",
             "name",
@@ -79,12 +79,12 @@ def show(
 
 def print_drink(drink: Drink, config: Config) -> None:
     print_table(config, [
-            ["ID", drink.id],
-            ["name", drink.name],
-            ["price", "{:.2f} €".format(drink.price)],
-            ["bottle size", drink.bottle_size],
-            ["caffeine", drink.caffeine],
-            ["active?", true_false_to_yes_no(drink.active)],
+            ("ID", drink.id),
+            ("name", drink.name),
+            ("price", "{:.2f} €".format(drink.price)),
+            ("bottle size", drink.bottle_size),
+            ("caffeine", drink.caffeine),
+            ("active?", true_false_to_yes_no(drink.active)),
     ])
 
 def edit_drink(data: Drink) -> None:
@@ -124,7 +124,7 @@ def barcodes_list(
     args: argparse.Namespace, config: Config, conn: Connection, drink: Drink
 ) -> None:
     barcodes = _get_barcodes_for_drink(conn, drink)
-    print_table(config, [[barcode] for barcode in barcodes])
+    print_table(config, [(barcode,) for barcode in barcodes])
 
 @with_drink
 def barcodes_add(
