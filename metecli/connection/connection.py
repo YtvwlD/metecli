@@ -3,7 +3,6 @@ from .barcode import Barcode
 from .config import Config
 from .drink import Drink
 from .user import User
-# from metecli.utils import Thing (moved to bottom)
 
 from requests import Session
 from urllib.parse import urljoin
@@ -206,5 +205,3 @@ class Connection():
             self._conf["api_version"] = self._api_version
             self._conf["base_url"] = self._base_url
             self._conf.save()
-
-from metecli.utils import Thing
