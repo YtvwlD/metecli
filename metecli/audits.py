@@ -4,7 +4,7 @@ from .connection.models import AuditInfo, Drink
 from .connection.connection import Connection
 
 from datetime import datetime
-from typing import List, Tuple, Dict, Iterator, Optional
+from typing import Any, List, Tuple, Dict, Iterator, Optional
 import argparse
 
 import logging
@@ -30,7 +30,7 @@ def do(args: argparse.Namespace, config: Config) -> None:
 
 def _create_table(
     audits: AuditInfo, drinks: List[Drink]
-) -> Iterator[Tuple[datetime, str, float]]:
+) -> Iterator[Tuple[str, str, float]]:
     for audit in audits.audits:
         drink = None
         if audit.drink:
@@ -40,7 +40,7 @@ def _create_table(
         yield (audit.created_at, drink.name, audit.difference)
 
 def show(config: Config, conn: Connection, user: Optional[str] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> None:
-    params = dict()
+    params: Dict[str, Any] = dict()
     if user:
         user_found = fuzzy_search(conn.users(), user)
         if user_found:
