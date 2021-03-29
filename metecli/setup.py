@@ -17,7 +17,9 @@ def get_url() -> Tuple[str, Connection]:
             given += "/"
         parsed = urlparse(given)
         if parsed.scheme not in ("http", "https"):
-            print("Unknown URL scheme '{}'. Please try again.".format(parsed.scheme))
+            print("Unknown URL scheme '{}'. Please try again.".format(
+                parsed.scheme
+            ))
             continue
         if parsed.scheme != "https":
             if yn("The URL you entered doesn't use HTTPS. Do you want to try again?"):
@@ -31,7 +33,9 @@ def get_url() -> Tuple[str, Connection]:
 
 
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
-    parser = global_subparsers.add_parser("setup", help="setup the connection and select an account")
+    parser = global_subparsers.add_parser(
+        "setup", help="setup the connection and select an account",
+    )
     parser.set_defaults(func=do)
 
 

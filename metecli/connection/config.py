@@ -7,7 +7,9 @@ DEFAULT_SETTINGS = {
 
 
 class Config:
-    def __init__(self, config: Dict[str, Any], save_func: Callable[[], None]) -> None:
+    def __init__(
+        self, config: Dict[str, Any], save_func: Callable[[], None]
+    ) -> None:
         self._settings = config
         self._save_func = save_func
     

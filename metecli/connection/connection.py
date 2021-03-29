@@ -11,7 +11,9 @@ log = logging.getLogger(__name__)
 
 
 class Connection():
-    def __init__(self, config: Optional['Config'], base_url: Optional[str] = None) -> None:
+    def __init__(
+        self, config: Optional['Config'], base_url: Optional[str] = None
+    ) -> None:
         self._sess = Session()
         if config and not base_url:
             self._conf: Optional['Config'] = config
@@ -36,7 +38,10 @@ class Connection():
         r.raise_for_status()
         return [User.from_v1(u) for u in r.json()]
     
-    def audits(self, user: Optional[int] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> AuditInfo:
+    def audits(
+        self, user: Optional[int] = None, from_date: Optional[datetime] = None,
+        to_date: Optional[datetime] = None,
+    ) -> AuditInfo:
         """Get audits."""
         params = dict()
         if user:
@@ -50,23 +55,32 @@ class Connection():
             params["end_date[year]"] = to_date.year
             params["end_date[month]"] = to_date.month
             params["end_date[day]"] = to_date.day
-        r = self._sess.get(urljoin(self._base_url, "audits.json"), params=params)
+        r = self._sess.get(
+            urljoin(self._base_url, "audits.json"), params=params,
+        )
         r.raise_for_status()
         return AuditInfo.from_v1(r.json())
     
     def get_user(self, uid: int) -> User:
         """Get information about a user."""
-        r = self._sess.get(urljoin(self._base_url, "users/{}.json".format(uid)))
+        r = self._sess.get(
+            urljoin(self._base_url, "users/{}.json".format(uid)),
+        )
         r.raise_for_status()
         return User.from_v1(r.json())
     
     def modify_user(self, user: User) -> None:
         """Modifys an existing user."""
-        r = self._sess.patch(urljoin(self._base_url, "users/{}.json").format(user.id), json=user.to_v1())
+        r = self._sess.patch(
+            urljoin(self._base_url, "users/{}.json").format(user.id),
+            json=user.to_v1(),
+        )
         r.raise_for_status()
     
     def delete_user(self, uid: int) -> None:
-        r = self._sess.delete(urljoin(self._base_url, "users/{}.json".format(uid)))
+        r = self._sess.delete(
+            urljoin(self._base_url, "users/{}.json".format(uid)),
+        )
         r.raise_for_status()
     
     def get_user_defaults(self) -> User:
@@ -77,23 +91,33 @@ class Connection():
     
     def add_user(self, user: User) -> User:
         """Creates a new user."""
-        r = self._sess.post(urljoin(self._base_url, "users.json"), json=user.to_v1())
+        r = self._sess.post(
+            urljoin(self._base_url, "users.json"), json=user.to_v1(),
+        )
         r.raise_for_status()
         return User.from_v1(r.json())
     
     def buy(self, uid: int, did: int) -> None:
         """Buy a drink."""
-        r = self._sess.get(urljoin(self._base_url, "users/{}/buy.json?drink={}".format(uid, did)))
+        r = self._sess.get(urljoin(
+            self._base_url, "users/{}/buy.json?drink={}".format(uid, did),
+        ))
         r.raise_for_status()
     
     def pay(self, uid: int, amount: float) -> None:
         """Pay an amount."""
-        r = self._sess.get(urljoin(self._base_url, "users/{}/payment.json?amount={}".format(uid, amount)))
+        r = self._sess.get(urljoin(
+            self._base_url,
+            "users/{}/payment.json?amount={}".format(uid, amount),
+        ))
         r.raise_for_status()
     
     def deposit(self, uid: int, amount: float) -> None:
         """Deposit money."""
-        r = self._sess.get(urljoin(self._base_url, "users/{}/deposit.json?amount={}".format(uid, amount)))
+        r = self._sess.get(urljoin(
+            self._base_url,
+            "users/{}/deposit.json?amount={}".format(uid, amount),
+        ))
         r.raise_for_status()
     
     def transfer(self, sender: int, receiver: int, amount: float) -> None:
@@ -133,7 +157,9 @@ class Connection():
     
     def delete_drink(self, drink_id: int) -> None:
         """Deletes an existing drink."""
-        r = self._sess.delete(urljoin(self._base_url, "drinks/{}.json").format(drink_id))
+        r = self._sess.delete(
+            urljoin(self._base_url, "drinks/{}.json").format(drink_id)
+        )
         r.raise_for_status()
     
     def barcodes(self) -> List[Barcode]:
@@ -158,7 +184,9 @@ class Connection():
     
     def delete_barcode(self, barcode_id: int) -> None:
         """Delete a barcode."""
-        r = self._sess.delete(urljoin(self._base_url, "barcodes/{}.json").format(barcode_id))
+        r = self._sess.delete(
+            urljoin(self._base_url, "barcodes/{}.json").format(barcode_id)
+        )
         r.raise_for_status()
     
     def try_connect(self) -> bool:
@@ -183,7 +211,10 @@ class Connection():
         for upgrade in (("legacy", "v1"),): # What should be upgraded?
             if self._api_version != upgrade[0]:
                 continue
-            log.info("Trying to upgrade the API version from '%s' to '%s'...", upgrade[0], upgrade[1])
+            log.info(
+                "Trying to upgrade the API version from '%s' to '%s'...",
+                upgrade[0], upgrade[1],
+            )
             # save the old values
             old_base_url = self._base_url
             self._api_version = upgrade[1]

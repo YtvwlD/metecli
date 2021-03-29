@@ -15,7 +15,9 @@ def setup_logging(log_level: str) -> None:
 
 
 def do() -> None:
-    parser = argparse.ArgumentParser(description="A command line interface to mete.")
+    parser = argparse.ArgumentParser(
+        description="A command line interface to mete."
+    )
     subparsers = parser.add_subparsers(help="commands")
     setup.setup_cmdline(subparsers)
     account.setup_cmdline(subparsers)
@@ -23,9 +25,16 @@ def do() -> None:
     drinks.setup_cmdline(subparsers)
     config.setup_cmdline(subparsers)
     show_version.setup_cmdline(subparsers)
-    parser.add_argument("--log_level", type=str, help="{debug, info, warning, error, critical}")
-    parser.add_argument("--config_path", type=str, help="the path where to place the config file(s)")
-    parser.add_argument("--config_name", type=str, help="the name of the config to use")
+    parser.add_argument(
+        "--log_level", type=str, help="{debug, info, warning, error, critical}"
+    )
+    parser.add_argument(
+        "--config_path", type=str,
+        help="the path where to place the config file(s)",
+    )
+    parser.add_argument(
+        "--config_name", type=str, help="the name of the config to use",
+    )
 
     args = parser.parse_args()
     if args.log_level:

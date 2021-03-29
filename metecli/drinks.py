@@ -1,4 +1,6 @@
-from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn, connect
+from .utils import (
+    true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn, connect,
+)
 from .config import Config
 from .connection.connection import Connection
 from .connection.models import Drink
@@ -10,33 +12,49 @@ log = logging.getLogger(__name__)
 
 
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
-    parser = global_subparsers.add_parser("drinks", help="show or modify drinks")
+    parser = global_subparsers.add_parser(
+        "drinks", help="show or modify drinks",
+    )
     subparsers = parser.add_subparsers(help="action")
     parser_list = subparsers.add_parser("list", help="lists all drinks")
     parser_list.set_defaults(func=list_drinks)
     parser_add = subparsers.add_parser("add", help="creates a new drink")
     parser_add.set_defaults(func=add_drink)
-    parser_show = subparsers.add_parser("show", help="display detailed information about a drink")
+    parser_show = subparsers.add_parser(
+        "show", help="display detailed information about a drink",
+    )
     parser_show.add_argument("drink", help="the drink to display")
     parser_show.set_defaults(func=show)
     parser_modify = subparsers.add_parser("modify", help="edits a drink")
     parser_modify.add_argument("drink", help="the drink to modify")
     parser_modify.set_defaults(func=modify)
-    parser_barcodes = subparsers.add_parser("barcodes", help="manage barcodes for this drink")
+    parser_barcodes = subparsers.add_parser(
+        "barcodes", help="manage barcodes for this drink",
+    )
     parser_barcodes.add_argument("drink", help="the drink")
     parser_barcodes.set_defaults(func=barcodes_list)
     subparsers_barcodes = parser_barcodes.add_subparsers(help="action")
-    parser_barcodes_list = subparsers_barcodes.add_parser("list", help="list all barcodes for this drink")
+    parser_barcodes_list = subparsers_barcodes.add_parser(
+        "list", help="list all barcodes for this drink",
+    )
     parser_barcodes_list.set_defaults(func=barcodes_list)
-    parser_barcodes_add = subparsers_barcodes.add_parser("add", help="add a barcode for this drink")
+    parser_barcodes_add = subparsers_barcodes.add_parser(
+        "add", help="add a barcode for this drink",
+    )
     parser_barcodes_add.add_argument("barcode", help="the barcode to add")
     parser_barcodes_add.set_defaults(func=barcodes_add)
-    parser_barcodes_delete = subparsers_barcodes.add_parser("delete", help="deletes a barcode for this drink")
-    parser_barcodes_delete.add_argument("barcode", help="the barcode to delete")
+    parser_barcodes_delete = subparsers_barcodes.add_parser(
+        "delete", help="deletes a barcode for this drink",
+    )
+    parser_barcodes_delete.add_argument(
+        "barcode", help="the barcode to delete",
+    )
     parser_barcodes_delete.set_defaults(func=barcodes_delete)
     parser_delete = subparsers.add_parser("delete", help="deletes a drink")
     parser_delete.add_argument("drink", help="the drink to delete")
-    parser_delete.add_argument("--force", action="store_true", help="don't confirm the deletion")
+    parser_delete.add_argument(
+        "--force", action="store_true", help="don't confirm the deletion",
+    )
     parser_delete.set_defaults(func=delete)
     parser.set_defaults(func=list_drinks)
 
@@ -65,7 +83,9 @@ def list_drinks(args: argparse.Namespace, config: Config) -> None:
     )
 
 
-def with_drink(func: Callable[[argparse.Namespace, Config, Connection, Drink], None]) -> Callable[[argparse.Namespace, Config], None]:
+def with_drink(
+    func: Callable[[argparse.Namespace, Config, Connection, Drink], None]
+) -> Callable[[argparse.Namespace, Config], None]:
     def new_func(args: argparse.Namespace, config: Config) -> None:
         conn = connect(config)
         drink = fuzzy_search(conn.drinks(), args.drink)
@@ -144,9 +164,13 @@ def barcodes_add(
     barcode = conn.get_barcode_defaults()
     barcode.drink = drink.id
     barcode.id = args.barcode
-    log.debug("Creating new barcode '%s' for drink '%s'.", barcode.id, drink.name)
+    log.debug(
+        "Creating new barcode '%s' for drink '%s'.", barcode.id, drink.name,
+    )
     barcode = conn.create_barcode(barcode)
-    log.info("Created new barcode '%s' for drink '%s'.", barcode.id, drink.name)
+    log.info(
+        "Created new barcode '%s' for drink '%s'.", barcode.id, drink.name,
+    )
 
 
 @with_drink
@@ -171,7 +195,9 @@ def delete(
         if not yn("Are you sure about this?"):
             log.debug("Deletion cancelled.")
             return
-        given = input("Then please enter the name of the drink you want to delete: ")
+        given = input(
+            "Then please enter the name of the drink you want to delete: "
+        )
         if given != drink.name:
             log.debug("Deletion cancelled.")
             print("This was not correct. Cancelling deletion.")

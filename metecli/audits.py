@@ -21,15 +21,26 @@ def valid_date(value: str) -> datetime: # taken from https://stackoverflow.com/a
 
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("audits", help="show audits")
-    parser.add_argument("--user", type=str, help="show only audits for the user USER")
-    parser.add_argument("--from_date", type=valid_date, help="show only audits that were created after this date")
-    parser.add_argument("--to_date", type=valid_date, help="show only audits that were created before this date")
+    parser.add_argument(
+        "--user", type=str, help="show only audits for the user USER",
+    )
+    parser.add_argument(
+        "--from_date", type=valid_date,
+        help="show only audits that were created after this date",
+    )
+    parser.add_argument(
+        "--to_date", type=valid_date,
+        help="show only audits that were created before this date",
+    )
     parser.set_defaults(func=do)
 
 
 def do(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
-    show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
+    show(
+        config, conn, user=args.user, from_date=args.from_date,
+        to_date=args.to_date,
+    )
 
 
 def _create_table(
@@ -44,7 +55,10 @@ def _create_table(
         yield (audit.created_at, drink.name, audit.difference)
 
 
-def show(config: Config, conn: Connection, user: Optional[str] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> None:
+def show(
+    config: Config, conn: Connection, user: Optional[str] = None,
+    from_date: Optional[datetime] = None, to_date: Optional[datetime] = None,
+) -> None:
     params: Dict[str, Any] = dict()
     if user:
         user_found = fuzzy_search(conn.users(), user)
@@ -64,4 +78,7 @@ def show(config: Config, conn: Connection, user: Optional[str] = None, from_date
     if user:
         print(" for user {}".format(user), end="")
     print(":")
-    print_table(config, _create_table(audits, drinks), headers=("time", "drink", "difference"))
+    print_table(
+        config, _create_table(audits, drinks),
+        headers=("time", "drink", "difference"),
+    )

@@ -5,7 +5,9 @@ from .connection.config import Config as ConnectionConfig
 
 from functools import partial
 from tabulate import tabulate
-from typing import Any, Tuple, Dict, List, Iterable, Optional, Type, TypeVar, Union
+from typing import (
+    Any, Tuple, Dict, List, Iterable, Optional, Type, TypeVar, Union,
+)
 
 import logging
 
@@ -20,7 +22,10 @@ def connect(config: 'Config') -> Connection:
     return Connection(connection_config)
 
 
-def print_table(config: 'Config', data: Iterable[Tuple[Any, ...]], headers: Tuple[str, ...] = tuple()) -> None:
+def print_table(
+    config: 'Config', data: Iterable[Tuple[Any, ...]],
+    headers: Tuple[str, ...] = tuple(),
+) -> None:
     print(tabulate(
         data,
         headers=headers,

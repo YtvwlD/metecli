@@ -25,11 +25,17 @@ DEFAULT_SETTINGS = {
 
 
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
-    parser = global_subparsers.add_parser("config", help="modify the configuration")
+    parser = global_subparsers.add_parser(
+        "config", help="modify the configuration",
+    )
     subparsers = parser.add_subparsers(help="action")
-    parser_display = subparsers.add_parser("display", help="displays the current config")
+    parser_display = subparsers.add_parser(
+        "display", help="displays the current config",
+    )
     parser_display.set_defaults(func=display)
-    parser_get = subparsers.add_parser("get", help="retrieves a specific value")
+    parser_get = subparsers.add_parser(
+        "get", help="retrieves a specific value",
+    )
     parser_get.add_argument("key", help="the key to search for")
     parser_get.set_defaults(func=get)
     parser_set = subparsers.add_parser("set", help="sets a specific value")
@@ -79,7 +85,9 @@ def set(args: argparse.Namespace, config: 'Config') -> None:
 
 
 class Config():
-    def __init__(self, path: Optional[str] = None, name: Optional[str] = None) -> None:
+    def __init__(
+        self, path: Optional[str] = None, name: Optional[str] = None,
+    ) -> None:
         self._search_config_file_path(path, name)
         self._open_or_create()
         self._migrate()
@@ -94,7 +102,9 @@ class Config():
     def __repr__(self) -> str:
         return repr(self._settings)
     
-    def _search_config_file_path(self, path: Optional[str], name: Optional[str]) -> None:
+    def _search_config_file_path(
+        self, path: Optional[str], name: Optional[str],
+    ) -> None:
         if path:
             log.info("Config path was specified: %s", path)
             config_path = path
@@ -110,9 +120,13 @@ class Config():
                 else:
                     log.info("Couldn't find XDG_CONFIG_HOME in enviroment. Falling back to platform-specific defaults.")
                     if sys.platform == "linux":
-                        config_base_path = os.path.join(os.environ["HOME"], ".config")
+                        config_base_path = os.path.join(
+                            os.environ["HOME"], ".config",
+                        )
                     elif sys.platform == "darwin":
-                        config_base_path = os.path.join(os.environ["HOME"], "Library/Application Support")
+                        config_base_path = os.path.join(
+                            os.environ["HOME"], "Library/Application Support",
+                        )
                     elif sys.platform == "windows":
                         assert os.environ.get("APPDATA")
                         config_base_path = os.environ["APPDATA"]
@@ -121,17 +135,25 @@ class Config():
                         sys.exit(-1)
             log.debug("Found config base path: %s", config_base_path)
             if not os.path.exists(config_base_path):
-                log.error("Config base path '%s' doesn't exist.", config_base_path)
+                log.error(
+                    "Config base path '%s' doesn't exist.", config_base_path,
+                )
                 sys.exit(-1)
             if not os.path.isdir(config_base_path):
-                log.error("Config base path '%s' exists but is not a directory.")
+                log.error(
+                    "Config base path '%s' exists but is not a directory."
+                )
                 sys.exit(-1)
             config_path = os.path.join(config_base_path, "metecli")
         if not os.path.exists(config_path):
-            log.info("Configuration path '%s' doesn't exist. Creating.", config_path)
+            log.info(
+                "Configuration path '%s' doesn't exist. Creating.", config_path
+            )
             os.mkdir(config_path)
         if not os.path.isdir(config_path):
-            log.error("Configuration path '%s' exists, but is not a directory.")
+            log.error(
+                "Configuration path '%s' exists, but is not a directory."
+            )
             sys.exit(-1)
         if not name:
             name = "config"
@@ -172,7 +194,9 @@ class Config():
         if self["version"] == 3:  # v3 -> v4
             log.info("Migrating to v4: Adding connection.api_version.")
             if self["connection"]["base_url"]:
-                self["connection"]["api_version"] = Connection(None, base_url=self["connection"]["base_url"]).determine_api_version()
+                self["connection"]["api_version"] = Connection(
+                    None, base_url=self["connection"]["base_url"]
+                ).determine_api_version()
             else:
                 self["connection"]["api_version"] = None
             self["version"] = 4
@@ -200,4 +224,6 @@ class Config():
     def save(self) -> None:
         log.debug("Saving config....")
         with open(self.config_file_path, "wt") as config_file:
-            yaml.safe_dump(self._settings, stream=config_file, default_flow_style=False)
+            yaml.safe_dump(
+                self._settings, stream=config_file, default_flow_style=False,
+            )

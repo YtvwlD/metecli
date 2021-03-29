@@ -2,7 +2,10 @@ from .config import Config
 from .connection.connection import Connection
 from .connection.models import Drink, User
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, connect, EMail
+from .utils import (
+    fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn,
+    connect, EMail,
+)
 
 from typing import List, Optional
 import argparse
@@ -11,37 +14,81 @@ log = logging.getLogger(__name__)
 
 
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
-    parser = global_subparsers.add_parser("account", help="show or modify an account")
+    parser = global_subparsers.add_parser(
+        "account", help="show or modify an account",
+    )
     subparsers = parser.add_subparsers(help="action")
-    parser_create = subparsers.add_parser("create", help="creates a new account")
+    parser_create = subparsers.add_parser(
+        "create", help="creates a new account",
+    )
     parser_create.set_defaults(func=create)
-    parser_select = subparsers.add_parser("select", help="select the account to use")
+    parser_select = subparsers.add_parser(
+        "select", help="select the account to use",
+    )
     parser_select.set_defaults(func=select)
-    parser_show = subparsers.add_parser("show", help="display some information")
-    parser_show.set_defaults(func=lambda args, config: Account(config).show(args))
-    parser_modify = subparsers.add_parser("modify", help="modify your settings")
-    parser_modify.set_defaults(func=lambda args, config: Account(config).modify(args))
-    parser_delete = subparsers.add_parser("delete", help="deletes your account")
-    parser_delete.add_argument("--force", action="store_true", help="don't confirm the deletion")
-    parser_delete.set_defaults(func=lambda args, config: Account(config).delete(args))
+    parser_show = subparsers.add_parser(
+        "show", help="display some information",
+    )
+    parser_show.set_defaults(
+        func=lambda args, config: Account(config).show(args),
+    )
+    parser_modify = subparsers.add_parser(
+        "modify", help="modify your settings",
+    )
+    parser_modify.set_defaults(
+        func=lambda args, config: Account(config).modify(args),
+    )
+    parser_delete = subparsers.add_parser(
+        "delete", help="deletes your account",
+    )
+    parser_delete.add_argument(
+        "--force", action="store_true", help="don't confirm the deletion",
+    )
+    parser_delete.set_defaults(
+        func=lambda args, config: Account(config).delete(args),
+    )
     parser_buy = subparsers.add_parser("buy", help="buys a drink")
     parser_buy.add_argument("drink", type=str, help="the drink to buy")
     parser_buy.set_defaults(func=lambda args, config: Account(config).buy(args))
-    parser_buy_barcode = subparsers.add_parser("buy_barcode", help="buys a drink by barcode")
+    parser_buy_barcode = subparsers.add_parser(
+        "buy_barcode", help="buys a drink by barcode",
+    )
     parser_buy_barcode.add_argument("barcode", type=str, help="the barcode")
-    parser_buy_barcode.set_defaults(func=lambda args, config: Account(config).buy_barcode(args))
-    parser_pay = subparsers.add_parser("pay", help="subtracts an amount from your balance")
-    parser_pay.add_argument("amount", type=float, help="the amount to subtract")
-    parser_pay.set_defaults(func=lambda args, config: Account(config).pay(args))
-    parser_deposit = subparsers.add_parser("deposit", help="add an amount to your balance")
+    parser_buy_barcode.set_defaults(
+        func=lambda args, config: Account(config).buy_barcode(args),
+    )
+    parser_pay = subparsers.add_parser(
+        "pay", help="subtracts an amount from your balance",
+    )
+    parser_pay.add_argument(
+        "amount", type=float, help="the amount to subtract",
+    )
+    parser_pay.set_defaults(
+        func=lambda args, config: Account(config).pay(args),
+    )
+    parser_deposit = subparsers.add_parser(
+        "deposit", help="add an amount to your balance",
+    )
     parser_deposit.add_argument("amount", type=float, help="the amount to add")
-    parser_deposit.set_defaults(func=lambda args, config: Account(config).deposit(args))
-    parser_transfer = subparsers.add_parser("transfer", help="transfer an amount to a different account")
-    parser_transfer.add_argument("receiver", type=str, help="the receiving user")
-    parser_transfer.add_argument("amount", type=float, help="the amount to transfer")
-    parser_transfer.set_defaults(func=lambda args, config: Account(config).transfer(args))
+    parser_deposit.set_defaults(
+        func=lambda args, config: Account(config).deposit(args),
+    )
+    parser_transfer = subparsers.add_parser(
+        "transfer", help="transfer an amount to a different account",
+    )
+    parser_transfer.add_argument(
+        "receiver", type=str, help="the receiving user",
+    )
+    parser_transfer.add_argument(
+        "amount", type=float, help="the amount to transfer",
+    )
+    parser_transfer.set_defaults(
+        func=lambda args, config: Account(config).transfer(args),
+    )
     parser_logs = subparsers.add_parser("logs", help="display the logs")
-    parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
+    parser_logs.set_defaults(
+        func=lambda args, config: Account(config).logs(args),
+    )
     parser.set_defaults(func=lambda args, config: Account(config).show(args))
 
 
@@ -69,7 +116,9 @@ def get_uid(conn: Connection) -> int:
     users = conn.users()
     while True:
         found = False
-        given = input("Please enter your username (or a part of it) or your uid: ")
+        given = input(
+            "Please enter your username (or a part of it) or your uid: "
+        )
         if given.isdecimal():
             uid = int(given)
             if find_by_id(users, uid):
@@ -77,7 +126,9 @@ def get_uid(conn: Connection) -> int:
         else:
             for user in users:
                 if given.casefold() in user.name.casefold():
-                    if yn("Is '{}' ({}) your account?".format(user.name, user.email)):
+                    if yn("Is '{}' ({}) your account?".format(
+                        user.name, user.email,
+                    )):
                         uid = user.id
                         found = True
                         break
@@ -117,7 +168,10 @@ class Account():
             ("account balance", "{:.2f} €".format(user.balance)),
             ("active?", true_false_to_yes_no(user.active)),
             ("log transactions?", true_false_to_yes_no(user.audit)),
-            ("redirect after buying something?", true_false_to_yes_no(user.redirect)),
+            (
+                "redirect after buying something?",
+                true_false_to_yes_no(user.redirect)
+            ),
         )
         print_table(self._conf, table_data)
         
@@ -183,7 +237,9 @@ class Account():
         user = self._conn.get_user(self._uid)
         if not args.force:
             log.debug("About to delete account '%s'.", user.name)
-            print("You are about to delete the account '{}'.".format(user.name))
+            print(
+                "You are about to delete the account '{}'.".format(user.name)
+            )
             if not yn("Are you sure about this?"):
                 log.debug("Deletion cancelled.")
                 return
