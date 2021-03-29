@@ -1,16 +1,20 @@
 # from .config import Config (moved to bottom)
+from .connection.audit import Audit
+from .connection.barcode import Barcode
+from .connection.drink import Drink
+from .connection.user import User
 from .connection.connection import Connection
 from .connection.config import Config as ConnectionConfig
 
 from functools import partial
 from tabulate import tabulate
-from typing import Any, Tuple, Dict, List, Iterable, Optional, Union
+from typing import Any, Tuple, Dict, List, Iterable, Optional, TypeVar, Union
 
 import logging
 
 log = logging.getLogger(__name__)
 
-Thing = Dict[str, object]
+Thing = TypeVar("Thing", Audit, Barcode, Drink, User)
 
 def connect(config: 'Config') -> Connection:
     connection_config = ConnectionConfig(config["connection"], config.save)
