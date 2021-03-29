@@ -1,7 +1,7 @@
 from .utils import true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn, connect
 from .config import Config
 from .connection.connection import Connection
-from .connection.drink import Drink
+from .connection.models import Drink
 
 from typing import Callable, Iterator
 import argparse

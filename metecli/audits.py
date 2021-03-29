@@ -1,7 +1,6 @@
 from .utils import fuzzy_search, find_by_id, print_table, connect
 from .config import Config
-from .connection.audit import AuditInfo
-from .connection.drink import Drink
+from .connection.models import AuditInfo, Drink
 from .connection.connection import Connection
 
 from datetime import datetime

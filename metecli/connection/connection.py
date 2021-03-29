@@ -1,8 +1,5 @@
-from .audit import AuditInfo
-from .barcode import Barcode
 from .config import Config
-from .drink import Drink
-from .user import User
+from .models import AuditInfo, Barcode, Drink, User
 
 from requests import Session
 from urllib.parse import urljoin

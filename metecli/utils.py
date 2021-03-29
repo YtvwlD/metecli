@@ -1,8 +1,5 @@
 # from .config import Config (moved to bottom)
-from .connection.audit import Audit
-from .connection.barcode import Barcode
-from .connection.drink import Drink
-from .connection.user import User
+from .connection.models import Audit, Barcode, Drink, User
 from .connection.connection import Connection
 from .connection.config import Config as ConnectionConfig
 
