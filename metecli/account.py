@@ -141,7 +141,7 @@ class Account():
         if not barcode:
             print("Couldn't find a drink with this barcode.")
             return
-        drink = find_by_id(drinks, barcode["drink"])
+        drink = find_by_id(drinks, barcode.drink)
         if not drink:
             print("Couldn't find a drink with this barcode.")
             return

@@ -115,9 +115,9 @@ def modify(
 def _get_barcodes_for_drink(conn: Connection, drink: Drink) -> Iterator[str]:
     all_barcodes = conn.barcodes()
     for barcode in all_barcodes:
-        if barcode["drink"] == drink.id:
-            log.debug("Found barcode: %s", barcode["id"])
-            yield barcode["id"]
+        if barcode.drink == drink.id:
+            log.debug("Found barcode: %s", barcode.id)
+            yield barcode.id
 
 @with_drink
 def barcodes_list(
@@ -131,11 +131,11 @@ def barcodes_add(
     args: argparse.Namespace, config: Config, conn: Connection, drink: Drink
 ) -> None:
     barcode = conn.get_barcode_defaults()
-    barcode["drink"] = drink.id
-    barcode["id"] = args.barcode
-    log.debug("Creating new barcode '%s' for drink '%s'.", barcode["id"], drink.name)
+    barcode.drink = drink.id
+    barcode.id = args.barcode
+    log.debug("Creating new barcode '%s' for drink '%s'.", barcode.id, drink.name)
     barcode = conn.create_barcode(barcode)
-    log.info("Created new barcode '%s' for drink '%s'.", barcode["id"], drink.name)
+    log.info("Created new barcode '%s' for drink '%s'.", barcode.id, drink.name)
 
 @with_drink
 def barcodes_delete(

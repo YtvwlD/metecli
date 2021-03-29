@@ -1,4 +1,5 @@
 from .audit import AuditInfo
+from .barcode import Barcode
 from .config import Config
 from .drink import Drink
 from .user import User
@@ -138,22 +139,25 @@ class Connection():
         r = self._sess.delete(urljoin(self._base_url, "drinks/{}.json").format(drink_id))
         r.raise_for_status()
     
-    def barcodes(self) -> List['Thing']:
+    def barcodes(self) -> List[Barcode]:
         """Lists all barcodes."""
         r = self._sess.get(urljoin(self._base_url, "barcodes.json"))
-        return r.json()
+        return [Barcode.from_v1(b) for b in r.json()]
     
-    def get_barcode_defaults(self) -> 'Thing':
+    def get_barcode_defaults(self) -> Barcode:
         """Get the defaults for creating new barcodes."""
         r = self._sess.get(urljoin(self._base_url, "barcodes/new.json"))
         r.raise_for_status()
-        return r.json()
+        return Barcode.from_v1(r.json())
     
-    def create_barcode(self, barcode: 'Thing') -> 'Thing':
+    def create_barcode(self, barcode: Barcode) -> Barcode:
         """Creates a new barcode."""
-        r = self._sess.post(urljoin(self._base_url, "barcodes.json"), json=barcode)
+        r = self._sess.post(
+            urljoin(self._base_url, "barcodes.json"),
+            json=barcode.to_v1(),
+        )
         r.raise_for_status()
-        return r.json()
+        return Barcode.from_v1(r.json())
     
     def delete_barcode(self, barcode_id: int) -> None:
         """Delete a barcode."""
