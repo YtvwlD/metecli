@@ -13,7 +13,7 @@ class Connection():
     def __init__(self, config: Optional['Config'], base_url: Optional[str] = None) -> None:
         self._sess = Session()
         if config and not base_url:
-            self._conf = config
+            self._conf: Optional['Config'] = config
             if not config["base_url"]:
                 raise Exception("The connection is not configured yet.")
             self._base_url = config["base_url"]
