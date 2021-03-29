@@ -1,9 +1,10 @@
 from typing import Any, Dict, Callable
 
-DEFAULT_SETTINGS =  {
+DEFAULT_SETTINGS = {
     "base_url": None,
     "api_version": None,
 }
+
 
 class Config:
     def __init__(self, config: Dict[str, Any], save_func: Callable[[], None]) -> None:

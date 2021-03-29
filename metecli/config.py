@@ -23,6 +23,7 @@ DEFAULT_SETTINGS = {
     }
 }
 
+
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("config", help="modify the configuration")
     subparsers = parser.add_subparsers(help="action")
@@ -37,8 +38,10 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser_set.set_defaults(func=set)
     parser.set_defaults(func=display)
 
+
 def display(args: argparse.Namespace, config: 'Config') -> None:
     print(yaml.safe_dump(config._settings, default_flow_style=False))
+
 
 def handle_KeyError(func: Callable[[argparse.Namespace, 'Config'], None]) -> Callable[[argparse.Namespace, 'Config'], None]:
     def new_func(args: argparse.Namespace, config: 'Config') -> None:
@@ -48,6 +51,7 @@ def handle_KeyError(func: Callable[[argparse.Namespace, 'Config'], None]) -> Cal
             print("This configuration key doesn't exist.")
     return new_func
 
+
 @handle_KeyError
 def get(args: argparse.Namespace, config: 'Config') -> None:
     path = args.key.split(".")
@@ -56,6 +60,7 @@ def get(args: argparse.Namespace, config: 'Config') -> None:
         if part:
             current = current[part]
     print(current)
+
 
 @handle_KeyError
 def set(args: argparse.Namespace, config: 'Config') -> None:
@@ -71,6 +76,7 @@ def set(args: argparse.Namespace, config: 'Config') -> None:
     current[path[-1]] = args.value
     log.info("Set %s to '%s'.", args.key, args.value)
     config.save()
+
 
 class Config():
     def __init__(self, path: Optional[str] = None, name: Optional[str] = None) -> None:
@@ -146,16 +152,16 @@ class Config():
             self.save()
     
     def _migrate(self) -> None:
-        if "version" not in self._settings: # v0 -> v1
+        if "version" not in self._settings:  # v0 -> v1
             log.info("Configuration doesn't have a version. Asssuming v1.")
             self["version"] = 1
             self.save()
-        if self["version"] == 1: # v1 -> v2
+        if self["version"] == 1:  # v1 -> v2
             log.info("Migrating to v2: Adding display.log_level.")
             self["display"]["log_level"] = "warning"
             self["version"] = 2
             self.save()
-        if self["version"] == 2: # v2 -> v3
+        if self["version"] == 2:  # v2 -> v3
             log.info("Migrating to v3: Adding 'uid' and 'base_url' to connection if they don't exist.")
             if "base_url" not in self["connection"]:
                 self["connection"]["base_url"] = None
@@ -163,7 +169,7 @@ class Config():
                 self["connection"]["uid"] = None
             self["version"] = 3
             self.save()
-        if self["version"] == 3: # v3 -> v4
+        if self["version"] == 3:  # v3 -> v4
             log.info("Migrating to v4: Adding connection.api_version.")
             if self["connection"]["base_url"]:
                 self["connection"]["api_version"] = Connection(None, base_url=self["connection"]["base_url"]).determine_api_version()
@@ -171,7 +177,7 @@ class Config():
                 self["connection"]["api_version"] = None
             self["version"] = 4
             self.save()
-        if self["version"] == 4: # v4 -> v5
+        if self["version"] == 4:  # v4 -> v5
             log.info("Migrationg to v5: Splitting account section and connection section.")
             if "account" not in self._settings:
                 self["account"] = dict()

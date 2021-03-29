@@ -6,11 +6,13 @@ import argparse
 import logging
 log = logging.getLogger(__name__)
 
+
 def setup_logging(log_level: str) -> None:
     numeric_log_level = getattr(logging, log_level.upper(), None) # type: int
     if not numeric_log_level:
         raise Exception("Invalid log level: {}".format(log_level))
     logging.basicConfig(level=numeric_log_level)
+
 
 def do() -> None:
     parser = argparse.ArgumentParser(description="A command line interface to mete.")
@@ -25,7 +27,7 @@ def do() -> None:
     parser.add_argument("--config_path", type=str, help="the path where to place the config file(s)")
     parser.add_argument("--config_name", type=str, help="the name of the config to use")
 
-    args = parser.parse_args() # type: argparse.Namespace
+    args = parser.parse_args()  # type: argparse.Namespace
     if args.log_level:
         setup_logging(args.log_level)
     

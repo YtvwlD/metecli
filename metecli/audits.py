@@ -10,12 +10,14 @@ import argparse
 import logging
 log = logging.getLogger(__name__)
 
+
 def valid_date(value: str) -> datetime: # taken from https://stackoverflow.com/a/25470943/2192464
     try:
         return datetime.strptime(value, "%Y-%m-%d")
     except ValueError:
         msg = "Not a valid date: '{}' (needs to be yyyy-mm-dd).".format(value)
         raise argparse.ArgumentTypeError(msg)
+
 
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("audits", help="show audits")
@@ -24,9 +26,11 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser.add_argument("--to_date", type=valid_date, help="show only audits that were created before this date")
     parser.set_defaults(func=do)
 
+
 def do(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
     show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
+
 
 def _create_table(
     audits: AuditInfo, drinks: List[Drink]
@@ -38,6 +42,7 @@ def _create_table(
         if not drink:
             drink = Drink(name= "n/a")
         yield (audit.created_at, drink.name, audit.difference)
+
 
 def show(config: Config, conn: Connection, user: Optional[str] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> None:
     params: Dict[str, Any] = dict()

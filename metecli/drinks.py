@@ -8,6 +8,7 @@ import argparse
 import logging
 log = logging.getLogger(__name__)
 
+
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("drinks", help="show or modify drinks")
     subparsers = parser.add_subparsers(help="action")
@@ -39,6 +40,7 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser_delete.set_defaults(func=delete)
     parser.set_defaults(func=list_drinks)
 
+
 def list_drinks(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
     drinks = conn.drinks()
@@ -62,6 +64,7 @@ def list_drinks(args: argparse.Namespace, config: Config) -> None:
         ),
     )
 
+
 def with_drink(func: Callable[[argparse.Namespace, Config, Connection, Drink], None]) -> Callable[[argparse.Namespace, Config], None]:
     def new_func(args: argparse.Namespace, config: Config) -> None:
         conn = connect(config)
@@ -71,11 +74,13 @@ def with_drink(func: Callable[[argparse.Namespace, Config, Connection, Drink], N
         func(args, config, conn, drink)
     return new_func
 
+
 @with_drink
 def show(
     args: argparse.Namespace, config: Config, conn: Connection, drink: Drink
 ) -> None:
     print_drink(drink, config)
+
 
 def print_drink(drink: Drink, config: Config) -> None:
     print_table(config, [
@@ -87,12 +92,14 @@ def print_drink(drink: Drink, config: Config) -> None:
             ("active?", true_false_to_yes_no(drink.active)),
     ])
 
+
 def edit_drink(data: Drink) -> None:
     show_edit(data, "name", "name", str)
     show_edit(data, "price", "price", float)
     show_edit(data, "bottle_size", "bottle size", float)
     show_edit(data, "caffeine", "caffeine", int)
     show_edit(data, "active", "active?", bool)
+
 
 def add_drink(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
@@ -103,6 +110,7 @@ def add_drink(args: argparse.Namespace, config: Config) -> None:
     data = conn.create_drink(data)
     log.info("Created a new drink. Data: %s", data)
 
+
 @with_drink
 def modify(
     args: argparse.Namespace, config: Config, conn: Connection, data: Drink
@@ -112,6 +120,7 @@ def modify(
     log.info("Editing drink. New data: %s", data)
     conn.modify_drink(data)
 
+
 def _get_barcodes_for_drink(conn: Connection, drink: Drink) -> Iterator[str]:
     all_barcodes = conn.barcodes()
     for barcode in all_barcodes:
@@ -119,12 +128,14 @@ def _get_barcodes_for_drink(conn: Connection, drink: Drink) -> Iterator[str]:
             log.debug("Found barcode: %s", barcode.id)
             yield barcode.id
 
+
 @with_drink
 def barcodes_list(
     args: argparse.Namespace, config: Config, conn: Connection, drink: Drink
 ) -> None:
     barcodes = _get_barcodes_for_drink(conn, drink)
     print_table(config, [(barcode,) for barcode in barcodes])
+
 
 @with_drink
 def barcodes_add(
@@ -137,6 +148,7 @@ def barcodes_add(
     barcode = conn.create_barcode(barcode)
     log.info("Created new barcode '%s' for drink '%s'.", barcode.id, drink.name)
 
+
 @with_drink
 def barcodes_delete(
     args: argparse.Namespace, config: Config, conn: Connection, drink: Drink
@@ -147,6 +159,7 @@ def barcodes_delete(
         return
     conn.delete_barcode(args.barcode)
     log.info("Deleted barcode '%s'.", args.barcode)
+
 
 @with_drink
 def delete(

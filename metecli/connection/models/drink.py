@@ -1,6 +1,7 @@
 from typing import Dict, Any
 # dataclasses are only supported on Python >= 3.7
 
+
 class Drink:
     def __init__(self, **kwargs):
         vars(self).update(kwargs)

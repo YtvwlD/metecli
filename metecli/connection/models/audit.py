@@ -1,6 +1,7 @@
 from typing import Dict, Any
 # dataclasses are only supported on Python >= 3.7
 
+
 class Audit:
     def __init__(self, **kwargs):
         vars(self).update(kwargs)
@@ -19,6 +20,7 @@ class Audit:
         return "Audit({})".format(
             ",".join(["{}={}".format(*item) for item in vars(self).items()])
         )
+
 
 class AuditInfo:
     def __init__(self, **kwargs):

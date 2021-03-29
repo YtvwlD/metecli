@@ -14,9 +14,11 @@ log = logging.getLogger(__name__)
 Thing = TypeVar("Thing", Audit, Barcode, Drink, User)
 EMail = type("EMail")
 
+
 def connect(config: 'Config') -> Connection:
     connection_config = ConnectionConfig(config["connection"], config.save)
     return Connection(connection_config)
+
 
 def print_table(config: 'Config', data: Iterable[Tuple[Any, ...]], headers: Tuple[str, ...] = tuple()) -> None:
     print(tabulate(
@@ -24,6 +26,7 @@ def print_table(config: 'Config', data: Iterable[Tuple[Any, ...]], headers: Tupl
         headers=headers,
         tablefmt=config["display"]["table_format"],
     ))
+
 
 def fuzzy_search(things: List[Thing], search_for: str) -> Optional[Thing]:
     possible_things = list()
@@ -57,6 +60,7 @@ def fuzzy_search(things: List[Thing], search_for: str) -> Optional[Thing]:
         print("No match was found.")
         return None
 
+
 def find_by_id(things: List[Thing], id: Union[int, str]) -> Optional[Thing]:
     log.debug("Searching for %s in %s...", id, things)
     for thing in things:
@@ -66,14 +70,17 @@ def find_by_id(things: List[Thing], id: Union[int, str]) -> Optional[Thing]:
     log.debug("No match.")
     return None
 
+
 def test_terminal_utf8() -> None:
     """Produces a warning if the system isn't correctly configured to output UTF-8."""
     from sys import stdout
     if stdout.encoding.upper() != "UTF-8":
         log.warn("Your system doesn't seem support UTF-8. Please consider fixing this.")
 
+
 def true_false_to_yes_no(value: bool) -> str:
     return "yes" if value else "no"
+
 
 def yes_no_to_true_false(value: str) -> Optional[bool]:
     if value in ("yes", "y"):
@@ -82,12 +89,14 @@ def yes_no_to_true_false(value: str) -> Optional[bool]:
         return False
     return None
 
+
 def yn(prompt: str) -> bool:
     while True:
         entered = yes_no_to_true_false(input("{} (y/n) ".format(prompt)))
         if entered is not None:
             return entered
         print("Please enter 'yes' or 'no'.")
+
 
 def show_edit(dict: Thing, key: str, prompt: str, type: Type) -> None:
     old_value = getattr(dict, key)
@@ -140,5 +149,6 @@ def show_edit(dict: Thing, key: str, prompt: str, type: Type) -> None:
         else:
             raise Exception("Unknown type. (Please report this isssue!)")
     setattr(dict, key, new_value)
+
 
 from .config import Config

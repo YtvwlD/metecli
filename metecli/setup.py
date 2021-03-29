@@ -9,6 +9,7 @@ import argparse
 import logging
 log = logging.getLogger(__name__)
 
+
 def get_url() -> Tuple[str, Connection]:
     while True:
         given = input("Please enter the url for mete: ")
@@ -28,9 +29,11 @@ def get_url() -> Tuple[str, Connection]:
             continue
         return given, conn
 
+
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("setup", help="setup the connection and select an account")
     parser.set_defaults(func=do)
+
 
 def do(args: argparse.Namespace, config: Config) -> None:
     log.info("Starting setup.")

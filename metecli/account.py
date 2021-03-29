@@ -9,6 +9,7 @@ import argparse
 import logging
 log = logging.getLogger(__name__)
 
+
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser = global_subparsers.add_parser("account", help="show or modify an account")
     subparsers = parser.add_subparsers(help="action")
@@ -43,6 +44,7 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
     parser_logs.set_defaults(func=lambda args, config: Account(config).logs(args))
     parser.set_defaults(func=lambda args, config: Account(config).show(args))
 
+
 def edit_user(data: User) -> None:
     show_edit(data, "name", "name", str)
     show_edit(data, "email", "email", EMail)
@@ -50,6 +52,7 @@ def edit_user(data: User) -> None:
     show_edit(data, "active", "active?", bool)
     show_edit(data, "audit", "log transactions?", bool)
     show_edit(data, "redirect", "redirect after buying something?", bool)
+
 
 def create(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
@@ -59,6 +62,7 @@ def create(args: argparse.Namespace, config: Config) -> None:
     log.debug("Creating new user. Data: %s", user)
     user = conn.add_user(user)
     log.info("Created new user. Data: %s", user)
+
 
 def get_uid(conn: Connection) -> int:
     log.info("Loading all users...")
@@ -82,12 +86,14 @@ def get_uid(conn: Connection) -> int:
         else:
             print("No matching account found. Please try again.")
 
+
 def select(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
     uid = get_uid(conn)
     config["account"]["uid"] = uid
     config.save()
     log.info("UID %i configured.", uid)
+
 
 class Account():
     def __init__(self, config: Config) -> None:
@@ -131,7 +137,6 @@ class Account():
         drink_found = fuzzy_search(self._conn.drinks(), args.drink)
         if drink_found:
             self._buy(drink_found)
-
     
     def buy_barcode(self, args: argparse.Namespace) -> None:
         barcodes = self._conn.barcodes()

@@ -9,6 +9,7 @@ from typing import Optional, List, Dict
 import logging
 log = logging.getLogger(__name__)
 
+
 class Connection():
     def __init__(self, config: Optional['Config'], base_url: Optional[str] = None) -> None:
         self._sess = Session()

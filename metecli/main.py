@@ -7,10 +7,12 @@ def fail_on_python2():
         print("You are still using Python 2. Please upgrade.")
         sys.exit(-1)
 
+
 def run():
     fail_on_python2()
     from . import cmdline
     cmdline.do()
+
 
 if __name__ == '__main__':
     run()
