@@ -1,4 +1,5 @@
-from .connection import Connection
+from .connection.connection import Connection
+from .connection.config import DEFAULT_SETTINGS as DEFAULT_CONNECTION_SETTINGS
 
 import yaml
 import os
@@ -11,10 +12,9 @@ import logging
 log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
-    "version": 4,
-    "connection": {
-        "base_url": None,
-        "api_version": None,
+    "version": 5,
+    "connection": DEFAULT_CONNECTION_SETTINGS,
+    "account": {
         "uid": None,
     },
     "display": {
@@ -77,6 +77,7 @@ class Config():
         self._search_config_file_path(path, name)
         self._open_or_create()
         self._migrate()
+        self._warn_on_downgrade()
     
     def __getitem__(self, key: str):
         return self._settings[key]
@@ -170,6 +171,25 @@ class Config():
                 self["connection"]["api_version"] = None
             self["version"] = 4
             self.save()
+        if self["version"] == 4: # v4 -> v5
+            log.info("Migrationg to v5: Splitting account section and connection section.")
+            if "account" not in self._settings:
+                self["account"] = dict()
+            if "uid" not in self["account"]:
+                assert "uid" in self["connection"]
+                self["account"]["uid"] = self["connection"]["uid"]
+            if "uid" in self["connection"]:
+                del self["connection"]["uid"]
+            self["version"] = 5
+            self.save()
+    
+    def _warn_on_downgrade(self):
+        if self["version"] > DEFAULT_SETTINGS["version"]:
+            log.warn(
+                "The configuration file has version %d, "
+                + "but this version of metecli only supports version %d.",
+                self["version"], DEFAULT_SETTINGS["version"])
+            log.warn("Downgrading isn't recommended. The program might crash at any moment!")
     
     def save(self) -> None:
         log.debug("Saving config....")

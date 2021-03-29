@@ -1,6 +1,6 @@
 from urllib.parse import urlparse
 from typing import Tuple
-from .connection import Connection
+from .connection.connection import Connection
 from .config import Config
 from .utils import yn
 from . import account
@@ -21,7 +21,7 @@ def get_url() -> Tuple[str, Connection]:
         if parsed.scheme != "https":
             if yn("The URL you entered doesn't use HTTPS. Do you want to try again?"):
                 continue
-            log.warning("Using HTTP. The connection won't be secure.")
+            log.warn("Using HTTP. The connection won't be secure.")
         conn = Connection(None, base_url=given)
         if not conn.try_connect():
             print("Couldn't connect to the server. Please try again.")
