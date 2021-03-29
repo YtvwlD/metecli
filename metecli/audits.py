@@ -51,7 +51,10 @@ def _create_table(
         if audit.drink:
             drink = find_by_id(drinks, audit.drink)
         if not drink:
-            drink = Drink(name= "n/a")
+            drink = Drink(
+                id=-1, name= "n/a", bottle_size=None, caffeine=None,
+                price=-audit.difference, active=True,
+            )
         yield (audit.created_at, drink.name, audit.difference)
 
 

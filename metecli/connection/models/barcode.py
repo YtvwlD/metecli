@@ -1,13 +1,11 @@
+from dataclasses import dataclass
 from typing import Dict, Any, Optional
-# dataclasses are only supported on Python >= 3.7
 
 
+@dataclass
 class Barcode:
     id: str
     drink: Optional[int]
-    
-    def __init__(self, **kwargs):
-        vars(self).update(kwargs)
     
     @classmethod
     def from_v1(cls, data: Dict[str, Any]) -> 'Barcode':
@@ -21,8 +19,3 @@ class Barcode:
             "id": self.id,
             "drink": self.drink,
         }
-    
-    def __repr__(self) -> str:
-        return "Barcode({})".format(
-            ",".join(["{}={}".format(*item) for item in vars(self).items()])
-        )

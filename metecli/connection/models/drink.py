@@ -1,7 +1,8 @@
+from dataclasses import dataclass
 from typing import Dict, Any, Optional
-# dataclasses are only supported on Python >= 3.7
 
 
+@dataclass
 class Drink:
     id: int
     name: str
@@ -9,9 +10,6 @@ class Drink:
     caffeine: Optional[int]
     price: float
     active: bool
-    
-    def __init__(self, **kwargs):
-        vars(self).update(kwargs)
     
     @classmethod
     def from_v1(cls, data: Dict[str, Any]) -> 'Drink':
@@ -33,8 +31,3 @@ class Drink:
             "price": self.price,
             "active": self.active,
         }
-    
-    def __repr__(self) -> str:
-        return "Drink({})".format(
-            ",".join(["{}={}".format(*item) for item in vars(self).items()])
-        )
