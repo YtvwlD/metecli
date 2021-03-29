@@ -14,6 +14,7 @@ import logging
 log = logging.getLogger(__name__)
 
 Thing = TypeVar("Thing", Audit, Barcode, Drink, User)
+ThingWithName = TypeVar("ThingWithName", Drink, User)
 EMail = type("EMail")
 
 
@@ -33,7 +34,9 @@ def print_table(
     ))
 
 
-def fuzzy_search(things: List[Thing], search_for: str) -> Optional[Thing]:
+def fuzzy_search(
+    things: List[ThingWithName], search_for: str
+) -> Optional[ThingWithName]:
     possible_things = list()
     selected_thing = None
     if search_for.isdecimal():

@@ -1,8 +1,16 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 # dataclasses are only supported on Python >= 3.7
 
 
 class User:
+    id: int
+    name: str
+    email: Optional[str]
+    balance: float
+    active: bool
+    audit: bool
+    redirect: bool
+    
     def __init__(self, **kwargs):
         vars(self).update(kwargs)
     

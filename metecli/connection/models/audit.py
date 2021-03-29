@@ -1,8 +1,13 @@
-from typing import Dict, Any
+from typing import Dict, Any, List, Optional
 # dataclasses are only supported on Python >= 3.7
 
 
 class Audit:
+    id: int
+    created_at: str
+    difference: float
+    drink: Optional[int]
+    
     def __init__(self, **kwargs):
         vars(self).update(kwargs)
     
@@ -23,6 +28,11 @@ class Audit:
 
 
 class AuditInfo:
+    sum: float
+    payments_sum: float
+    deposits_sum: float
+    audits: List[Audit]
+    
     def __init__(self, **kwargs):
         vars(self).update(kwargs)
     

@@ -1,8 +1,15 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 # dataclasses are only supported on Python >= 3.7
 
 
 class Drink:
+    id: int
+    name: str
+    bottle_size: Optional[float]
+    caffeine: Optional[int]
+    price: float
+    active: bool
+    
     def __init__(self, **kwargs):
         vars(self).update(kwargs)
     

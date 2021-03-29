@@ -1,8 +1,11 @@
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 # dataclasses are only supported on Python >= 3.7
 
 
 class Barcode:
+    id: str
+    drink: Optional[int]
+    
     def __init__(self, **kwargs):
         vars(self).update(kwargs)
     
