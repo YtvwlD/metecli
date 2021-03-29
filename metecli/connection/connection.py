@@ -1,3 +1,4 @@
+from .audit import AuditInfo
 from .config import Config
 from .drink import Drink
 from .user import User
@@ -37,7 +38,7 @@ class Connection():
         r.raise_for_status()
         return [User.from_v1(u) for u in r.json()]
     
-    def audits(self, user: Optional[int] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> Dict[str, object]:
+    def audits(self, user: Optional[int] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> AuditInfo:
         """Get audits."""
         params = dict()
         if user:
@@ -53,7 +54,7 @@ class Connection():
             params["end_date[day]"] = to_date.day
         r = self._sess.get(urljoin(self._base_url, "audits.json"), params=params)
         r.raise_for_status()
-        return r.json()
+        return AuditInfo.from_v1(r.json())
     
     def get_user(self, uid: int) -> User:
         """Get information about a user."""

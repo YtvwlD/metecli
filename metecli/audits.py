@@ -1,5 +1,6 @@
 from .utils import fuzzy_search, find_by_id, print_table, connect
 from .config import Config
+from .connection.audit import AuditInfo
 from .connection.drink import Drink
 from .connection.connection import Connection
 
@@ -28,14 +29,16 @@ def do(args: argparse.Namespace, config: Config) -> None:
     conn = connect(config)
     show(config, conn, user=args.user, from_date=args.from_date, to_date=args.to_date)
 
-def _create_table(audits: Dict[str, object], drinks: List[Drink]) -> Iterator[Tuple[datetime, str, float]]:
-    for audit in audits["audits"]:
+def _create_table(
+    audits: AuditInfo, drinks: List[Drink]
+) -> Iterator[Tuple[datetime, str, float]]:
+    for audit in audits.audits:
         drink = None
-        if audit["drink"]:
-            drink = find_by_id(drinks, audit["drink"])
+        if audit.drink:
+            drink = find_by_id(drinks, audit.drink)
         if not drink:
-            drink = {"name": "n/a"}
-        yield (audit["created_at"], drink.name, audit["difference"])
+            drink = Drink(name= "n/a")
+        yield (audit.created_at, drink.name, audit.difference)
 
 def show(config: Config, conn: Connection, user: Optional[str] = None, from_date: Optional[datetime] = None, to_date: Optional[datetime] = None) -> None:
     params = dict()
