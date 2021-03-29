@@ -12,6 +12,7 @@ import logging
 log = logging.getLogger(__name__)
 
 Thing = TypeVar("Thing", Audit, Barcode, Drink, User)
+EMail = type("EMail")
 
 def connect(config: 'Config') -> Connection:
     connection_config = ConnectionConfig(config["connection"], config.save)
@@ -126,7 +127,7 @@ def show_edit(dict: Thing, key: str, prompt: str, type: Type) -> None:
                 break
             else:
                 print("Please enter yes or no.")
-        elif type == "email":
+        elif type == EMail:
             if "@" in given:
                 new_value = given
                 break

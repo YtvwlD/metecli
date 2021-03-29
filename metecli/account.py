@@ -2,7 +2,7 @@ from .config import Config
 from .connection.connection import Connection
 from .connection.models import Drink, User
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, connect
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, connect, EMail
 
 from typing import List, Optional
 import argparse
@@ -45,7 +45,7 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
 
 def edit_user(data: User) -> None:
     show_edit(data, "name", "name", str)
-    show_edit(data, "email", "email", "email")
+    show_edit(data, "email", "email", EMail)
     show_edit(data, "balance", "account balance", float)
     show_edit(data, "active", "active?", bool)
     show_edit(data, "audit", "log transactions?", bool)
