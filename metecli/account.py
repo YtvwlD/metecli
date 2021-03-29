@@ -72,7 +72,7 @@ def get_uid(conn: Connection) -> int:
                 found = True
         else:
             for user in users:
-                if given in user.name:
+                if given.casefold() in user.name.casefold():
                     if yn("Is '{}' ({}) your account?".format(user.name, user.email)):
                         uid = user.id
                         found = True
