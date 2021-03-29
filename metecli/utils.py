@@ -5,7 +5,7 @@ from .connection.config import Config as ConnectionConfig
 
 from functools import partial
 from tabulate import tabulate
-from typing import Any, Tuple, Dict, List, Iterable, Optional, TypeVar, Union
+from typing import Any, Tuple, Dict, List, Iterable, Optional, Type, TypeVar, Union
 
 import logging
 
@@ -17,7 +17,7 @@ def connect(config: 'Config') -> Connection:
     connection_config = ConnectionConfig(config["connection"], config.save)
     return Connection(connection_config)
 
-def print_table(config: 'Config', data: Iterable[Tuple[object, ...]], headers: Tuple[str, ...] = tuple()) -> None:
+def print_table(config: 'Config', data: Iterable[Tuple[Any, ...]], headers: Tuple[str, ...] = tuple()) -> None:
     print(tabulate(
         data,
         headers=headers,
@@ -88,7 +88,7 @@ def yn(prompt: str) -> bool:
             return entered
         print("Please enter 'yes' or 'no'.")
 
-def show_edit(dict: Thing, key: str, prompt: str, type: object) -> None:
+def show_edit(dict: Thing, key: str, prompt: str, type: Type) -> None:
     old_value = getattr(dict, key)
     if type == bool:
         old_value = true_false_to_yes_no(old_value)

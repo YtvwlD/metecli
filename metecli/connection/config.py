@@ -1,4 +1,4 @@
-from typing import Dict, Callable
+from typing import Any, Dict, Callable
 
 DEFAULT_SETTINGS =  {
     "base_url": None,
@@ -6,14 +6,14 @@ DEFAULT_SETTINGS =  {
 }
 
 class Config:
-    def __init__(self, config: Dict[str, object], save_func: Callable[[], None]) -> None:
+    def __init__(self, config: Dict[str, Any], save_func: Callable[[], None]) -> None:
         self._settings = config
         self._save_func = save_func
     
-    def __getitem__(self, key: str) -> object:
+    def __getitem__(self, key: str) -> Any:
         return self._settings[key]
     
-    def __setitem__(self, key: str, value: object) -> None:
+    def __setitem__(self, key: str, value: Any) -> None:
         self._settings[key] = value
     
     def __repr__(self) -> str:
