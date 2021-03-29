@@ -96,7 +96,7 @@ class Account():
         if not self._conf["account"]["uid"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
         else:
-            self._uid = self._conf["account"]["uid"] # type: Optional[int]
+            self._uid = self._conf["account"]["uid"]
     
     def show(self, args: argparse.Namespace) -> None:
         """Displays information about this user."""
