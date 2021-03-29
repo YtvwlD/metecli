@@ -1,8 +1,9 @@
 from .config import Config
 from .connection.connection import Connection
+from .connection.drink import Drink
 from .connection.user import User
 from . import audits
-from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, Thing, connect
+from .utils import fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn, connect
 
 from typing import List, Optional
 import argparse
@@ -146,11 +147,13 @@ class Account():
             return
         self._buy(drink)
     
-    def _buy(self, drink: Thing) -> None:
-        log.info("Buying %s...", drink["name"])
-        self._conn.buy(self._uid, drink["id"])
+    def _buy(self, drink: Drink) -> None:
+        log.info("Buying %s...", drink.name)
+        self._conn.buy(self._uid, drink.id)
         data = self._conn.get_user(self._uid)
-        log.info("Success! You bought {} and your new balance is {}.".format(drink["name"], data.balance))
+        log.info("Success! You bought {} and your new balance is {}.".format(
+            drink.name, data.balance
+        ))
         if data.balance < 0:
             log.warn("Your balance is below zero. Remember to compensate as soon as possible.")
         if data.audit:

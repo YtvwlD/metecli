@@ -1,4 +1,5 @@
 from .config import Config
+from .drink import Drink
 from .user import User
 # from metecli.utils import Thing (moved to bottom)
 
@@ -102,26 +103,32 @@ class Connection():
         self.pay(sender, amount)
         self.deposit(receiver, amount)
     
-    def drinks(self) -> List['Thing']:
+    def drinks(self) -> List[Drink]:
         """Lists all drinks."""
         r = self._sess.get(urljoin(self._base_url, "drinks.json"))
         r.raise_for_status()
-        return r.json()
+        return [Drink.from_v1(d) for d in r.json()]
     
-    def modify_drink(self, drink: 'Thing') -> None:
+    def modify_drink(self, drink: Drink) -> None:
         """Modifys an existing drink."""
-        r = self._sess.patch(urljoin(self._base_url, "drinks/{}.json").format(drink["id"]), json=drink)
+        r = self._sess.patch(
+            urljoin(self._base_url, "drinks/{}.json").format(drink.id),
+            json=drink.to_v1(),
+        )
         r.raise_for_status()
     
-    def get_drink_defaults(self) -> 'Thing':
+    def get_drink_defaults(self) -> Drink:
         """Gets the default settings for creating a new drink."""
         r = self._sess.get(urljoin(self._base_url, "drinks/new.json"))
         r.raise_for_status()
-        return r.json()
+        return Drink.from_v1(r.json())
     
-    def create_drink(self, drink: 'Thing') -> 'Thing':
+    def create_drink(self, drink: Drink) -> Drink:
         """Creates a new drink."""
-        r = self._sess.post(urljoin(self._base_url, "drinks.json"), json=drink)
+        r = self._sess.post(
+            urljoin(self._base_url, "drinks.json"),
+            json=drink.to_v1()
+        )
         r.raise_for_status()
         return r.json()
     
