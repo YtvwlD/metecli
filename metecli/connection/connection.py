@@ -78,7 +78,7 @@ class Connection():
         """Creates a new user."""
         r = self._sess.post(urljoin(self._base_url, "users.json"), json=user.to_v1())
         r.raise_for_status()
-        return User(r.json())
+        return User.from_v1(r.json())
     
     def buy(self, uid: int, did: int) -> None:
         """Buy a drink."""
