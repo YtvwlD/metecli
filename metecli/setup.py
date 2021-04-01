@@ -25,7 +25,7 @@ def get_url() -> Tuple[str, Connection]:
             if yn("The URL you entered doesn't use HTTPS. Do you want to try again?"):
                 continue
             log.warn("Using HTTP. The connection won't be secure.")
-        conn = Connection(None, base_url=given)
+        conn = Connection.new(None, base_url=given)
         if not conn.try_connect():
             print("Couldn't connect to the server. Please try again.")
             continue
@@ -43,7 +43,7 @@ def do(args: argparse.Namespace, config: Config) -> None:
     log.info("Starting setup.")
     url, conn = get_url()
     config["connection"]["base_url"] = url
-    api_version = conn.determine_api_version()
+    api_version = Connection.determine_api_version(url)  # TODO
     config["connection"]["api_version"] = api_version
     config.save()
     log.info("URL '%s' (API version %s) configured.", url, api_version)
