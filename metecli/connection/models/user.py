@@ -52,6 +52,15 @@ class User:
             "redirect": self.redirect,
         }
     
+    @classmethod
+    def from_v3(cls, data: Dict[str, Any]) -> 'User':
+        # TODO: perhaps support barcode?
+        return cls.from_v2(data)
+    
+    def to_v3(self) -> Dict[str, Any]:
+        # TODO: perhaps support barcode?
+        return self.to_v2()
+    
     def __repr__(self) -> str:
         return "User({})".format(
             ",".join(["{}={}".format(*item) for item in vars(self).items()])
