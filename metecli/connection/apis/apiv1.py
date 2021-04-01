@@ -189,6 +189,10 @@ class ApiV1(Connection):
             log.error("%s: %s", type(exc).__name__, exc)
             return False
     
+    def api_version(self) -> str:
+        """Get the API version."""
+        return self._api_version
+    
     def _try_upgrade(self) -> Tuple[bool, 'Connection']:
         """Tries to upgrade the API version.
         

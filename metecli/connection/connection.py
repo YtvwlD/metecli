@@ -149,6 +149,11 @@ class Connection(metaclass=ABCMeta):
             return "legacy"
         # TODO
     
+    @abstractmethod
+    def api_version(self) -> str:
+        """Get the API version."""
+        pass
+    
     def try_upgrade(self) -> 'Connection':
         """Tries to upgrade the API version."""
         changed, new_conn = self._try_upgrade()
