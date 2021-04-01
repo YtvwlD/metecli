@@ -1,3 +1,4 @@
+from .connection.apis.api_version import ApiVersion
 from .connection.connection import Connection
 from .connection.config import DEFAULT_SETTINGS as DEFAULT_CONNECTION_SETTINGS
 
@@ -12,7 +13,7 @@ import logging
 log = logging.getLogger(__name__)
 
 DEFAULT_SETTINGS = {
-    "version": 5,
+    "version": 6,
     "connection": DEFAULT_CONNECTION_SETTINGS,
     "account": {
         "uid": None,
@@ -212,6 +213,17 @@ class Config():
                 del self["connection"]["uid"]
             self["version"] = 5
             self.save()
+        if self["version"] == 5:  # v5 -> v6
+            log.info("Migrating to v6: Switching api_version to an enum.")
+            if "connection" in self._settings:
+                if "api_version" in self["connection"]:
+                    if self["connection"]["api_version"] is not None:
+                        self["connection"]["api_version"] = {
+                            "legacy": ApiVersion.legacy,
+                            "v1": ApiVersion.v1,
+                        }[self["connection"]["api_version"]]
+                self["version"] = 6
+                self.save()
     
     def _warn_on_downgrade(self):
         if self["version"] > DEFAULT_SETTINGS["version"]:
