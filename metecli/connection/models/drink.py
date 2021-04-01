@@ -27,6 +27,26 @@ class Drink:
             "active": self.active,
         }
     
+    @classmethod
+    def from_v2(cls, data: Dict[str, Any]) -> 'Drink':
+        return cls(
+            id=int(data["id"]),
+            name=str(data["name"]),
+            bottle_size=None,
+            caffeine=int(data["caffeine"]) if data["caffeine"] is not None else None,
+            price=int(data["price"]) / 100,
+            active=bool(data["active"]),
+        )
+    
+    def to_v2(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "caffeine": self.caffeine,
+            "price": int(self.price * 100),
+            "active": self.active,
+        }
+    
     def __repr__(self) -> str:
         return "Drink({})".format(
             ",".join(["{}={}".format(*item) for item in vars(self).items()])
