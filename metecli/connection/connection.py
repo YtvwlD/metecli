@@ -159,7 +159,7 @@ class Connection(metaclass=ABCMeta):
         changed, new_conn = self._try_upgrade()
         if changed and self._conf:
             # save the new values
-            self._conf["api_version"] = self._api_version
+            self._conf["api_version"] = self.api_version()
             self._conf["base_url"] = self._base_url
             self._conf.save()
         return new_conn
