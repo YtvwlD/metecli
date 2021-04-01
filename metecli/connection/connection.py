@@ -1,3 +1,4 @@
+from .apis.api_version import ApiVersion
 from .config import Config
 from .models import AuditInfo, Barcode, Drink, ServerInfo, User
 
@@ -27,7 +28,7 @@ class Connection(metaclass=ABCMeta):
             api_version = cls.determine_api_version(base_url)
         else:
             raise Exception("Either config *or* base_url must be provided.")
-        if api_version in ("legacy", "v1"):
+        if api_version in (ApiVersion.legacy, ApiVersion.v1):
             from .apis.apiv1 import ApiV1
             return ApiV1(sess, config, base_url, api_version)
         elif api_version == "v2":
@@ -152,19 +153,20 @@ class Connection(metaclass=ABCMeta):
         pass
     
     @classmethod
-    def determine_api_version(cls, base_url: str) -> str:
+    def determine_api_version(cls, base_url: str) -> ApiVersion:
         """Tries to determine the API version."""
         if "api/v1" in base_url:
-            return "v1"
+            return ApiVersion.v1
         elif "api/v2" in base_url:
-            return "v2"
+            return ApiVersion.v2
         elif "api/v3" in base_url:
-            return "v3"
+            return ApiVersion.v3
         else:
-            return "legacy"
+            return ApiVersion.legacy
+        # TODO
     
     @abstractmethod
-    def api_version(self) -> str:
+    def api_version(self) -> ApiVersion:
         """Get the API version."""
         pass
     

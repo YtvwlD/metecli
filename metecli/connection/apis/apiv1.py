@@ -1,6 +1,7 @@
 from ..config import Config
 from ..connection import Connection
 from ..models import AuditInfo, Barcode, Drink, ServerInfo, User
+from .api_version import ApiVersion
 
 from requests import Session
 from urllib.parse import urljoin
@@ -19,7 +20,7 @@ class ApiV1(Connection):
         self._sess = sess
         self._conf = conf
         self._base_url = base_url
-        assert api_version in ("legacy", "v1")
+        assert api_version in (ApiVersion.legacy, ApiVersion.v1)
         self._api_version = api_version
         self.try_upgrade()
     
@@ -193,7 +194,7 @@ class ApiV1(Connection):
             log.error("%s: %s", type(exc).__name__, exc)
             return False
     
-    def api_version(self) -> str:
+    def api_version(self) -> ApiVersion:
         """Get the API version."""
         return self._api_version
     
@@ -201,13 +202,13 @@ class ApiV1(Connection):
         """Tries to upgrade the API version.
         
         Return whether a change occurred and the new API handle."""
-        if self._api_version == "legacy":
+        if self._api_version == ApiVersion.legacy:
             log.info(
                 "Trying to upgrade the API version from 'legacy' to 'v1'...",
             )
             # save the old values
             old_base_url = self._base_url
-            self._api_version = "v1"
+            self._api_version = ApiVersion.v1
             try:
                 self._base_url = urljoin(self._base_url, "api/v1/")
                 assert self.try_connect()
@@ -216,7 +217,7 @@ class ApiV1(Connection):
                 # something went wrong
                 log.warn("The server doesn't support API version 'v1'. (Or the connection failed.)")
                 # restore the old values
-                self._api_version = "legacy"
+                self._api_version = ApiVersion.legacy
                 self._base_url = old_base_url
             return (changed, self)
         else:
