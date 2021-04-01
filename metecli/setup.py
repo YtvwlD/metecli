@@ -43,7 +43,7 @@ def do(args: argparse.Namespace, config: Config) -> None:
     log.info("Starting setup.")
     url, conn = get_url()
     config["connection"]["base_url"] = url
-    api_version = Connection.determine_api_version(url)  # TODO
+    api_version = conn.api_version()
     config["connection"]["api_version"] = api_version
     config.save()
     log.info("URL '%s' (API version %s) configured.", url, api_version)
