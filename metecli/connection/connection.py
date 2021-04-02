@@ -1,5 +1,5 @@
 from .config import Config
-from .models import AuditInfo, Barcode, Drink, User
+from .models import AuditInfo, Barcode, Drink, ServerInfo, User
 
 from abc import ABCMeta, abstractmethod
 from requests import Session
@@ -35,6 +35,11 @@ class Connection(metaclass=ABCMeta):
             return ApiV2(sess, config, base_url)
         else:
             raise NotImplementedError("This API version is not supported (yet).")
+    
+    @abstractmethod
+    def server_info(self) -> ServerInfo:
+        """Get information about the server."""
+        pass
     
     @abstractmethod
     def users(self) -> List[User]:
