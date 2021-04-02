@@ -33,6 +33,9 @@ class Connection(metaclass=ABCMeta):
         elif api_version == "v2":
             from .apis.apiv2 import ApiV2
             return ApiV2(sess, config, base_url)
+        elif api_version == "v3":
+            from .apis.apiv3 import ApiV3
+            return ApiV3(sess, config, base_url)
         else:
             raise NotImplementedError("This API version is not supported (yet).")
     
@@ -155,9 +158,10 @@ class Connection(metaclass=ABCMeta):
             return "v1"
         elif "api/v2" in base_url:
             return "v2"
+        elif "api/v3" in base_url:
+            return "v3"
         else:
             return "legacy"
-        # TODO
     
     @abstractmethod
     def api_version(self) -> str:
