@@ -1,6 +1,6 @@
 from ..config import Config
 from ..connection import Connection
-from ..models import AuditInfo, Barcode, Drink, User
+from ..models import AuditInfo, Barcode, Drink, ServerInfo, User
 
 from requests import Session
 from urllib.parse import urljoin
@@ -22,6 +22,10 @@ class ApiV1(Connection):
         assert api_version in ("legacy", "v1")
         self._api_version = api_version
         self.try_upgrade()
+    
+    def server_info(self) -> ServerInfo:
+        """Get information about the server."""
+        raise NotImplementedError
     
     def users(self) -> List[User]:
         """Lists all users."""
