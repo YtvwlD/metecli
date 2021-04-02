@@ -9,7 +9,7 @@ class User:
     @classmethod
     def from_v1(cls, data: Dict[str, Any]) -> 'User':
         return cls(
-            id=int(data["id"]),
+            id=int(data["id"]) if data["id"] is not None else None,
             name=str(data["name"]),
             email=str(data["email"]) if data["email"] is not None else None,
             balance=float(data["balance"]),

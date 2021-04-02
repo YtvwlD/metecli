@@ -153,7 +153,7 @@ class Connection():
             json=drink.to_v1()
         )
         r.raise_for_status()
-        return r.json()
+        return Drink.from_v1(r.json())
     
     def delete_drink(self, drink_id: int) -> None:
         """Deletes an existing drink."""

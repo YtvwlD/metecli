@@ -9,7 +9,7 @@ class Drink:
     @classmethod
     def from_v1(cls, data: Dict[str, Any]) -> 'Drink':
         return cls(
-            id=int(data["id"]),
+            id=int(data["id"]) if data["id"] is not None else None,
             name=str(data["name"]),
             bottle_size=float(data["bottle_size"]),
             caffeine=int(data["caffeine"]) if data["caffeine"] is not None else None,
