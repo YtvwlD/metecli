@@ -3,7 +3,7 @@ from .config import Config
 from .connection.models import AuditInfo, Drink
 from .connection.connection import Connection
 
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any, List, Tuple, Dict, Iterator, Optional
 import argparse
 
@@ -11,9 +11,9 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def valid_date(value: str) -> datetime: # taken from https://stackoverflow.com/a/25470943/2192464
+def valid_date(value: str) -> date: # taken from https://stackoverflow.com/a/25470943/2192464
     try:
-        return datetime.strptime(value, "%Y-%m-%d")
+        return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError:
         msg = "Not a valid date: '{}' (needs to be yyyy-mm-dd).".format(value)
         raise argparse.ArgumentTypeError(msg)
@@ -57,7 +57,7 @@ def _create_table(
 
 def show(
     config: Config, conn: Connection, user: Optional[str] = None,
-    from_date: Optional[datetime] = None, to_date: Optional[datetime] = None,
+    from_date: Optional[date] = None, to_date: Optional[date] = None,
 ) -> None:
     params: Dict[str, Any] = dict()
     if user:

@@ -3,7 +3,7 @@ from .models import AuditInfo, Barcode, Drink, User
 
 from requests import Session
 from urllib.parse import urljoin
-from datetime import datetime
+from datetime import date
 from typing import Optional, List, Dict
 
 import logging
@@ -39,8 +39,8 @@ class Connection():
         return [User.from_v1(u) for u in r.json()]
     
     def audits(
-        self, user: Optional[int] = None, from_date: Optional[datetime] = None,
-        to_date: Optional[datetime] = None,
+        self, user: Optional[int] = None, from_date: Optional[date] = None,
+        to_date: Optional[date] = None,
     ) -> AuditInfo:
         """Get audits."""
         params = dict()
