@@ -14,7 +14,7 @@ import logging
 log = logging.getLogger(__name__)
 
 Thing = TypeVar("Thing", Audit, Barcode, Drink, User)
-EMail = type("EMail")
+EMail = type("EMail", (object,), {})
 
 
 def connect(config: 'Config') -> Connection:
