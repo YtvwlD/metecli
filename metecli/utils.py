@@ -4,9 +4,15 @@ from .connection.connection import Connection
 from .connection.config import Config as ConnectionConfig
 
 from functools import partial
+from interrogatio import interrogatio
+from interrogatio.core.exceptions import ValidationError
+from interrogatio.validators import (
+    EmailValidator, IntegerValidator, NumberValidator, RequiredValidator,
+)
+from interrogatio.validators.base import Validator
 from tabulate import tabulate
 from typing import (
-    Any, Tuple, Dict, List, Iterable, Optional, Type, TypeVar, Union,
+    Any, Tuple, Dict, List, Iterable, NamedTuple, Optional, Type, TypeVar, Union
 )
 
 import logging
@@ -103,57 +109,75 @@ def yn(prompt: str) -> bool:
         print("Please enter 'yes' or 'no'.")
 
 
-def show_edit(dict: Thing, key: str, prompt: str, type: Type) -> None:
-    old_value = getattr(dict, key)
-    if type == bool:
-        old_value = true_false_to_yes_no(old_value)
-    final_prompt = "{} [{}]: ".format(prompt, old_value)
-    while True:
-        given = input(final_prompt)
-        if not given:
-            given = old_value
-            if old_value is None:
-                new_value = old_value
-                break
-        if type == str:
-            if given.strip():
-                new_value = given
-                break
-            else:
-                print("Please type something.")
-                continue
-        elif type == int:
-            try:
-                new_value = int(given)
-                break
-            except ValueError:
-                print("Please enter a number.")
-                continue
-        elif type == float:
-            try:
-                new_value = float(given)
-                break
-            except ValueError:
-                print("Please enter a number.")
-        elif type == bool:
-            new_value = yes_no_to_true_false(given)
-            if new_value is not None:
-                break
-            else:
-                print("Please enter yes or no.")
-        elif type == EMail:
-            if "@" in given:
-                new_value = given
-                break
-            elif not given: # empty address
-                new_value = given
-                break
-            else:
-                print("This is not a valid email adress.")
-                continue
+class BooleanValidator(Validator):
+    def __init__(self):
+        super(BooleanValidator, self).__init__(
+            message="this field does not match yes or no"
+        )
+    
+    def validate(self, value, context=None):
+        if yes_no_to_true_false(value) is None:
+            raise ValidationError(self.message)
+
+
+class Question(NamedTuple):
+    attribute: str
+    message: str
+    description: Optional[str] = None
+    type: Type = str
+    required: bool = False
+
+    def to_interrogatio(self, data: Thing) -> Dict[str, Any]:
+        d = {
+            "name": self.attribute,
+            "message": self.message,
+            "description": self.description,
+            "type": "input",
+            "validators": [],
+        }
+        old_value = getattr(data, self.attribute)
+        if self.required:
+            d["validators"].append(RequiredValidator())
+        if self.type == str:
+            d["default"] = old_value
+        elif self.type == int:
+            d["validators"].append(IntegerValidator())
+            d["default"] = str(old_value)
+        elif self.type == float:
+            d["validators"].append(NumberValidator())
+            d["default"] = str(old_value)
+        elif self.type == bool:
+            d["default"] = true_false_to_yes_no(old_value)
+            d["validators"].append(BooleanValidator())
+        elif self.type == EMail:
+            d["default"] = old_value
+            d["validators"].append(EmailValidator())
+        else:
+            raise Exception(
+                "Unknown type {}. (Please report this isssue!)".format(
+                    self.type
+                )
+            )
+        return d
+
+
+def show_edit(thing: Thing, questions: List[Question]) -> None:
+    interrogatio_questions = [q.to_interrogatio(thing) for q in questions]
+    interrogatio_answers = interrogatio(interrogatio_questions)
+    for key, value in interrogatio_answers.items():
+        question = list(filter(lambda q: q.attribute == key, questions))[0]
+        if question.type == str:
+            new_value = value
+        elif question.type == int:
+            new_value = int(value)
+        elif question.type == float:
+            new_value = float(value)
+        elif question.type == bool:
+            new_value = yes_no_to_true_false(value)
+        elif question.type == EMail:
+            new_value = value
         else:
             raise Exception("Unknown type. (Please report this isssue!)")
-    setattr(dict, key, new_value)
-
+        setattr(thing, key, new_value)
 
 from .config import Config

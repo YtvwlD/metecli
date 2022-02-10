@@ -4,7 +4,7 @@ from .connection.models import Drink, User
 from . import audits
 from .utils import (
     fuzzy_search, true_false_to_yes_no, show_edit, find_by_id, print_table, yn,
-    connect, EMail,
+    connect, EMail, Question,
 )
 
 from typing import List, Optional
@@ -93,12 +93,43 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
 
 
 def edit_user(data: User) -> None:
-    show_edit(data, "name", "name", str)
-    show_edit(data, "email", "email", EMail)
-    show_edit(data, "balance", "account balance", float)
-    show_edit(data, "active", "active?", bool)
-    show_edit(data, "audit", "log transactions?", bool)
-    show_edit(data, "redirect", "redirect after buying something?", bool)
+    show_edit(data, [
+        Question(
+            attribute="name",
+            message="Name",
+            description="your nickname",
+            required=True,
+        ),
+        Question(
+            attribute="email",
+            type=EMail,
+            message="Email",
+            description="your eMail address. Only used to fetch your avatar from gravatar.com.",
+        ),
+        Question(
+            attribute="balance",
+            type=float,
+            message="Balance",
+            description="just in case you need to correct this",
+        ),
+        Question(
+            attribute="active",
+            type=bool,
+            message="active?",
+        ),
+        Question(
+            attribute="audit",
+            type=bool,
+            message="Audit",
+            description="This will create detailed logs about what you buy and deposit. If you uncheck this box, all records will be deleted.",
+        ),
+        Question(
+            attribute="redirect",
+            type=bool,
+            message="Redirect",
+            description="redirect after buying something?",
+        ),
+    ])
 
 
 def create(args: argparse.Namespace, config: Config) -> None:

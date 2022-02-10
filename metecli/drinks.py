@@ -1,5 +1,6 @@
 from .utils import (
     true_false_to_yes_no, fuzzy_search, print_table, show_edit, yn, connect,
+    Question,
 )
 from .config import Config
 from .connection.connection import Connection
@@ -114,11 +115,37 @@ def print_drink(drink: Drink, config: Config) -> None:
 
 
 def edit_drink(data: Drink) -> None:
-    show_edit(data, "name", "name", str)
-    show_edit(data, "price", "price", float)
-    show_edit(data, "bottle_size", "bottle size", float)
-    show_edit(data, "caffeine", "caffeine", int)
-    show_edit(data, "active", "active?", bool)
+    show_edit(data, [
+        Question(
+            attribute="name",
+            message="Name",
+            description="the label says...",
+            required=True,
+        ),
+        Question(
+            attribute="price",
+            message="Price",
+            description="e.g. 1.50",
+            type=float,
+        ),
+        Question(
+            attribute="bottle_size",
+            message="Bottle size",
+            description="0.5 or 0.33?",
+            type=float,
+        ),
+        Question(
+            attribute="caffeine",
+            message="Caffeine",
+            description="in mg/100 ml",
+            type=float,
+        ),
+        Question(
+            attribute="active",
+            message="Active",
+            type=bool,
+        ),
+    ])
 
 
 def add_drink(args: argparse.Namespace, config: Config) -> None:
