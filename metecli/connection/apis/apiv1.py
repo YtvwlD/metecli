@@ -1,6 +1,6 @@
 from ..config import Config
 from ..connection import Connection
-from ..models import AuditInfo, Barcode, Drink, ServerInfo, User
+from ..models import ApiVersion, AuditInfo, Barcode, Drink, ServerInfo, User
 
 from requests import Session
 from urllib.parse import urljoin
@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 class ApiV1(Connection):
     def __init__(
         self, sess: Session, conf: Optional['Config'],
-        base_url: str, api_version: str,
+        base_url: str, api_version: ApiVersion,
     ) -> None:
         self._sess = sess
         self._conf = conf
@@ -193,7 +193,7 @@ class ApiV1(Connection):
             log.error("%s: %s", type(exc).__name__, exc)
             return False
     
-    def api_version(self) -> str:
+    def api_version(self) -> ApiVersion:
         """Get the API version."""
         return self._api_version
     

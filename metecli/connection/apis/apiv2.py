@@ -185,7 +185,7 @@ class ApiV2(Connection):
             log.error("%s: %s", type(exc).__name__, exc)
             return False
     
-    def api_version(self) -> str:
+    def api_version(self) -> ApiVersion:
         """Get the API version."""
         return "v2"
     

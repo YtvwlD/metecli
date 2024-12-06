@@ -1,5 +1,5 @@
 from .config import Config
-from .models import AuditInfo, Barcode, Drink, ServerInfo, User
+from .models import ApiVersion, AuditInfo, Barcode, Drink, ServerInfo, User
 
 from abc import ABCMeta, abstractmethod
 from requests import Session
@@ -8,7 +8,6 @@ from typing import Optional, List, Dict, Tuple
 
 import logging
 log = logging.getLogger(__name__)
-
 
 class Connection(metaclass=ABCMeta):
     @classmethod
@@ -152,7 +151,7 @@ class Connection(metaclass=ABCMeta):
         pass
     
     @classmethod
-    def determine_api_version(cls, base_url: str) -> str:
+    def determine_api_version(cls, base_url: str) -> ApiVersion:
         """Tries to determine the API version."""
         if "api/v1" in base_url:
             return "v1"
@@ -164,7 +163,7 @@ class Connection(metaclass=ABCMeta):
             return "legacy"
     
     @abstractmethod
-    def api_version(self) -> str:
+    def api_version(self) -> ApiVersion:
         """Get the API version."""
         pass
     
