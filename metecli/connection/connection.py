@@ -126,6 +126,19 @@ class Connection():
         self.pay(sender, amount)
         self.deposit(receiver, amount)
     
+    def check_wrapped(self, uid: int, year: int) -> Optional[str]:
+        """Check if wrapped is supported on this instance, return the URL if it is."""
+        url = urljoin(
+            self._base_url,
+            # needs to be absolute
+            "/users/{}/wrapped/{}".format(uid, year),
+        )
+        r = self._sess.get(url)
+        if r.ok:
+            return url
+        else:
+            return None
+
     def drinks(self) -> List[Drink]:
         """Lists all drinks."""
         r = self._sess.get(urljoin(self._base_url, "drinks.json"))

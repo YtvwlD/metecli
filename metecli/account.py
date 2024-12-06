@@ -7,6 +7,7 @@ from .utils import (
     connect, EMail, Question,
 )
 
+from datetime import date
 from typing import List, Optional
 import argparse
 import logging
@@ -183,8 +184,28 @@ class Account():
         self._conn = connect(config)
         if not self._conf["account"]["uid"]:
             raise Exception("User account is not configured yet. Account management isn't possible.")
+        self._uid = self._conf["account"]["uid"]
+        self._check_wrapped()
+    
+    def _check_wrapped(self) -> None:
+        # only notify if it's December or January
+        today = date.today()
+        if today.month == 12:
+            year = today.year
+        elif today.month == 1:
+            year = today.year - 1
         else:
-            self._uid = self._conf["account"]["uid"]
+            return
+        # get the account to check whether audit is enabled
+        user = self._conn.get_user(self._uid)
+        if not user.audit:
+           return 
+        # check whether the feature is available
+        wrapped_url = self._conn.check_wrapped(self._uid, year)
+        if not wrapped_url:
+            return
+        # display the message
+        log.info("Your %s wrapped is available: %s", year, wrapped_url)
     
     def show(self, args: argparse.Namespace) -> None:
         """Displays information about this user."""
