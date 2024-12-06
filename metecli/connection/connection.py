@@ -39,6 +39,10 @@ class Connection(metaclass=ABCMeta):
         else:
             raise NotImplementedError("This API version is not supported (yet).")
     
+    def base_url(self) -> str:
+        """Get the base URL."""
+        return self._base_url
+    
     @abstractmethod
     def server_info(self) -> ServerInfo:
         """Get information about the server."""

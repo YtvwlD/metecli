@@ -10,7 +10,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def get_url() -> Tuple[str, Connection]:
+def get_url() -> Tuple[Connection]:
     while True:
         given = input("Please enter the url for mete: ")
         if not given.endswith("/"):
@@ -29,7 +29,7 @@ def get_url() -> Tuple[str, Connection]:
         if not conn.try_connect():
             print("Couldn't connect to the server. Please try again.")
             continue
-        return given, conn
+        return conn
 
 
 def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
@@ -41,12 +41,13 @@ def setup_cmdline(global_subparsers: argparse._SubParsersAction) -> None:
 
 def do(args: argparse.Namespace, config: Config) -> None:
     log.info("Starting setup.")
-    url, conn = get_url()
-    config["connection"]["base_url"] = url
+    conn = get_url()
+    base_url = conn.base_url()
+    config["connection"]["base_url"] = base_url
     api_version = conn.api_version()
     config["connection"]["api_version"] = api_version
     config.save()
-    log.info("URL '%s' (API version %s) configured.", url, api_version)
+    log.info("URL '%s' (API version %s) configured.", base_url, api_version)
     if yn("Do want to setup an account now?"):
         if not yn("Do you already have an account?"):
             account.create(args, config)
