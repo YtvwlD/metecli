@@ -25,7 +25,7 @@ EMail = type("EMail", (object,), {})
 
 def connect(config: 'Config') -> Connection:
     connection_config = ConnectionConfig(config["connection"], config.save)
-    return Connection(connection_config)
+    return Connection.new(connection_config)
 
 
 def print_table(

@@ -194,9 +194,9 @@ class Config():
         if self["version"] == 3:  # v3 -> v4
             log.info("Migrating to v4: Adding connection.api_version.")
             if self["connection"]["base_url"]:
-                self["connection"]["api_version"] = Connection(
-                    None, base_url=self["connection"]["base_url"]
-                ).determine_api_version()
+                self["connection"]["api_version"] = Connection.determine_api_version(
+                    self["connection"]["base_url"]
+                )
             else:
                 self["connection"]["api_version"] = None
             self["version"] = 4
