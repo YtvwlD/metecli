@@ -1,6 +1,6 @@
 from ..config import Config
 from ..connection import Connection
-from ..models import AuditInfo, Barcode, Drink, User
+from ..models import ApiVersion, AuditInfo, Barcode, Drink, User
 
 from requests import Session
 from urllib.parse import urljoin

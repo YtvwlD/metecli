@@ -28,13 +28,13 @@ class Connection(metaclass=ABCMeta):
         else:
             raise Exception("Either config *or* base_url must be provided.")
         if api_version in ("legacy", "v1"):
-            from .apis.apiv1 import ApiV1
+            from .apis import ApiV1
             return ApiV1(sess, config, base_url, api_version)
         elif api_version == "v2":
-            from .apis.apiv2 import ApiV2
+            from .apis import ApiV2
             return ApiV2(sess, config, base_url)
         elif api_version == "v3":
-            from .apis.apiv3 import ApiV3
+            from .apis import ApiV3
             return ApiV3(sess, config, base_url)
         else:
             raise NotImplementedError("This API version is not supported (yet).")
